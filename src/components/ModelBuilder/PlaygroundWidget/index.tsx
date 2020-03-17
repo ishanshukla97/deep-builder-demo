@@ -1,7 +1,4 @@
 import React from "react";
-import { ApolloConsumer } from "@apollo/react-hooks"
-import { Query } from "react-apollo";
-import gql from "graphql-tag";
 import OpsWidget from "../OpsWidget";
 import OpsWidgetItem from "../OpsWidget/OpsWidgetItem";
 import Application from "../../Application";
@@ -10,37 +7,15 @@ import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import ops from "../OpsBucket/ops";
 import "./index.scss";
 import { Button, Input, Loader } from "semantic-ui-react";
-import ApolloClient from "apollo-client";
 
 export interface PlaygroundWidgetProps {
     app: Application;
-    client: ApolloClient<object>
 }
 export interface PlaygroundWidgetState {
     isParsing: boolean;
     isAdding: boolean;
     modelName: string;
 }
-
-const ADD_MODEL = gql`
-    mutation addModel($modelInput: ModelInput) {
-        addModel(modelInput: $modelInput)
-    }
-`
-const LIST_MODELS = gql`
-    query listModels {
-        listModels {
-            model,
-            name,
-            id
-        }
-    }
-`
-const GET_CURRENT_MODEL = gql`
-    {
-        frontModel @client
-    }
-`
 
 export default class PlaygroundWidget extends React.Component<PlaygroundWidgetProps, PlaygroundWidgetState> {
     constructor (props: PlaygroundWidgetProps) {
@@ -88,7 +63,6 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
         const currentModel = this.props.app.getDiagramEngine().getModel().serialize();
         const stringifiedModel = await JSON.stringify(currentModel);
         const modelInput = { model: stringifiedModel, name: this.state.modelName }
-        await client.mutate({ mutation: ADD_MODEL, variables: { modelInput } });
 
         this.setState({ isAdding: false });
     }
@@ -244,21 +218,6 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
                 <div className="playground-widget__header">Playground widget Header</div>
                 <div className="playground-widget__container">
                     <OpsWidget>
-                        <Query query={LIST_MODELS}>
-                            {
-                                ({ loading, error, data }: any) => {
-                                    if (loading)    return <Loader />
-                                    if (error)      return <span>Oops! An error occured.</span>
-                                    
-                                    return data.listModels.map((dataItem: any) => <OpsWidgetItem
-                                        model={{type: "_Model"}}
-                                        name={dataItem.name}
-                                        data={dataItem.model}
-                                        key={dataItem.id}
-                                    />)
-                                }
-                            }
-                        </Query>
                         {
                             ops.map(op => 
                                 <OpsWidgetItem 
@@ -281,36 +240,6 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
                             engine={this.props.app.getDiagramEngine()}
                             className="playground-widget--canvas-wrapper" 
                         />
-                    </div>
-                    <div className="playground-widget__action-bar">
-                        <ApolloConsumer>
-                            {
-                                (client) => {
-                                    return <>
-                                        <Button 
-                                            className="playground-widget--btn"
-                                            onClick={() => this.handleParseGraph(client)} 
-                                            loading={this.state.isParsing}
-                                        >Parse</Button>
-                                        <Input
-                                            className="playground-widget--input"
-                                            onChange={this.handleModelNameChange}
-                                            placeholder="preset name"
-                                        />
-                                        <Button
-                                            className="playground-widget--btn"
-                                            onClick={() => this.handleAddGraph(client)}
-                                            loading={this.state.isAdding}
-                                        >Add Preset</Button>
-                                        <Button
-                                            className="playground-widget--btn"
-                                            onClick={() => this.handleSetModel(client)}
-                                        >
-                                        Set Model</Button>
-                                    </>
-                                }
-                            }
-                        </ApolloConsumer>
                     </div>
                 </div>
             </div>
