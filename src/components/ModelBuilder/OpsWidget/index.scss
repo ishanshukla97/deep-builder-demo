@@ -1,0 +1,17 @@
+.ops-bucket {
+    height: 47rem;
+    width: 20%;
+    background-color: rgb(60, 60, 60);
+    border-radius: 0.5rem;
+    overflow-y: scroll;
+
+    &__item {
+        padding: 0.2rem;
+        margin: 10px;
+        color: white;
+        border: 1px solid;
+        border-color: white;
+        border-radius: 0.2rem;
+        background-color: rgb(60, 60, 60);
+    }
+}
