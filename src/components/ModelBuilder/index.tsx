@@ -9,7 +9,7 @@ export interface ModelBuilderProps {
 
 const ModelBuilder: React.FC<ModelBuilderProps> = ({ defaultProps, app }) => {
     const location = useLocation();
-    const isCurrentPage = location.pathname === "/model-builder"
+    const isCurrentPage = location.pathname === "/"
 
     if (isCurrentPage) 
         return <PlaygroundWidget app={app} />

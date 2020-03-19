@@ -6,7 +6,7 @@ import { NodeModel } from "../Node/NodeModel";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import ops from "../OpsBucket/ops";
 import "./index.scss";
-import { Button, Input, Loader } from "semantic-ui-react";
+import { DefaultPortModel } from "@projectstorm/react-diagrams";
 
 export interface PlaygroundWidgetProps {
     app: Application;
@@ -26,45 +26,8 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
             modelName: ""
         }
         this.handleParseGraph = this.handleParseGraph.bind(this);
-        this.handleAddGraph = this.handleAddGraph.bind(this);
         this.handleModelNameChange = this.handleModelNameChange.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
-    }
-
-    // componentDidMount () {
-    //     const cache = this.props.client.readQuery({ query: GET_CURRENT_MODEL })
-    //     const { frontModel } = cache
-    //     if (frontModel && frontModel.length) {
-    //         this.props.app.newModel()
-    //         const e = {
-    //             dataTransfer: {
-    //                 getData: (key: string) => {
-    //                     if (key === "model-node") {
-    //                         return frontModel
-    //                     }
-    //                 }
-    //             }
-    //         }
-            
-    //         this.handleDrop(e)
-    //     }
-    // }
-
-    async handleSetModel (client: any) {
-        const strNodes = await this.parseGraph();
-        const frontModel = JSON.stringify(this.props.app.getDiagramEngine().getModel().serialize());
-        
-        await client.writeData({ data: { currentModel: strNodes, frontModel } })
-    }
-
-    async handleAddGraph (client: any) {
-        this.setState({ isAdding: true });
-
-        const currentModel = this.props.app.getDiagramEngine().getModel().serialize();
-        const stringifiedModel = await JSON.stringify(currentModel);
-        const modelInput = { model: stringifiedModel, name: this.state.modelName }
-
-        this.setState({ isAdding: false });
     }
 
     async handleParseGraph (client: any) {
@@ -132,7 +95,8 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
              */
             const srcNode = presetToCurrentId[srcId]
             const trgNode = presetToCurrentId[trgId]
-            const srcPort = srcNode.getOutPorts()[0];
+            const srcPort: DefaultPortModel = srcNode.getOutPorts()[0];
+
             const trgPort = trgNode.getInPorts()[0];
 
             if (srcPort && trgPort){
