@@ -1,9 +1,9 @@
 import React from "react";
 import { DiagramEngine, PortWidget } from "@projectstorm/react-diagrams-core";
-import { NodeModel } from "./NodeModel";
-
-import NodeArgsFactory from "../OpsBucket/index";
 import { Accordion, Icon } from "semantic-ui-react";
+
+import { NodeModel } from "./NodeModel";
+import NodeArgsFactory from "./ArgsFactory";
 import "./index.scss"
 
 export interface NodeWidgetProps {

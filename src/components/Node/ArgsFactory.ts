@@ -1,4 +1,4 @@
-import { InputFactory, ToggleFactory, MultiSelectFactory } from "./factories/index.react";
+import { InputFactory, ToggleFactory, MultiSelectFactory } from "./argFactories/index.react";
 
 let registeredComponentFactories: any = {};
 

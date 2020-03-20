@@ -1,15 +1,14 @@
 import React from "react";
-import OpsWidget from "../OpsWidget";
-import OpsWidgetItem from "../OpsWidget/OpsWidgetItem";
-import Application from "../../Application";
+import { OpsWidget } from "../OpsWidget";
+import { DiagramApplication } from "../../DiagramApplication";
 import { NodeModel } from "../Node/NodeModel";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
-import ops from "../OpsBucket/ops";
 import "./index.scss";
 import { DefaultPortModel } from "@projectstorm/react-diagrams";
 
 export interface PlaygroundWidgetProps {
-    app: Application;
+    app: DiagramApplication;
+    renderAvailableOps: () => any
 }
 export interface PlaygroundWidgetState {
     isParsing: boolean;
@@ -25,19 +24,7 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
             isAdding: false,
             modelName: ""
         }
-        this.handleParseGraph = this.handleParseGraph.bind(this);
-        this.handleModelNameChange = this.handleModelNameChange.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
-    }
-
-    async handleParseGraph (client: any) {
-        this.setState({ isParsing: true });
-        await this.parseGraph(client);
-        this.setState({ isParsing: false })
-    }
-
-    handleModelNameChange (e: any, { value }: any) {
-        this.setState({ modelName: value })        
     }
 
     handleDrop (event: any) {
@@ -96,7 +83,6 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
             const srcNode = presetToCurrentId[srcId]
             const trgNode = presetToCurrentId[trgId]
             const srcPort: DefaultPortModel = srcNode.getOutPorts()[0];
-
             const trgPort = trgNode.getInPorts()[0];
 
             if (srcPort && trgPort){
@@ -181,18 +167,7 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
             <div className="playground-widget">
                 <div className="playground-widget__header">Playground widget Header</div>
                 <div className="playground-widget__container">
-                    <OpsWidget>
-                        {
-                            ops.map(op => 
-                                <OpsWidgetItem 
-                                    model={{type: "custom"}} 
-                                    name={op.func_name} 
-                                    key={op.func_name} 
-                                    args={op.args} 
-                                />
-                            )
-                        }
-                    </OpsWidget>
+                    { this.props.renderAvailableOps() }
                     <div
                         onDrop={this.handleDrop}
                         onDragOver={event => {
