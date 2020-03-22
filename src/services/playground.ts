@@ -1,12 +1,21 @@
 import * as SRD from "@projectstorm/react-diagrams";
 import { DeleteItemsAction } from "@projectstorm/react-canvas-core";
-import { NodeFactory } from "./components/Node/NodeFactory"
+
+import { NodeFactory } from "../components/Node/NodeFactory"
 
 export class DiagramApplication {
     protected activeModel: any;
     protected diagramEngine: SRD.DiagramEngine;
 
-    constructor () {
+    public static getInstance(): DiagramApplication {
+        if (!DiagramApplication.instance) {
+            DiagramApplication.instance = new DiagramApplication();
+        }
+        return DiagramApplication.instance;
+    }
+    private static instance: DiagramApplication;
+
+    private constructor () {
         this.diagramEngine = SRD.default({ registerDefaultDeleteItemsAction: false });
         this.activeModel = new SRD.DiagramModel();
         this.newModel();
