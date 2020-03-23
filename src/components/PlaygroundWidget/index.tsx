@@ -7,6 +7,7 @@ export interface PlaygroundWidgetProps {
     renderCanvasWidget: (className?: string) => any;
     handleAddNode: (name: string, args: any, event: any) => any;
     handleAddPresetModel: (data: any) => any;
+    renderLoader: () => any;
 }
 export interface PlaygroundWidgetState {
     isParsing: boolean;
@@ -50,9 +51,8 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
                         }}
                         className="playground-widget__content"
                     >
-                        {
-                            this.props.renderCanvasWidget("playground-widget--canvas-wrapper")
-                        }
+                        { this.props.renderLoader() }
+                        { this.props.renderCanvasWidget("playground-widget--canvas-wrapper") }
                     </div>
                 </div>
             </div>

@@ -1,29 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import { Container } from "semantic-ui-react";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 
 import Playground from "../components/PlaygroundWidget"
-import { DiagramApplication } from "../services/playground"
+import { DiagramApplication } from "../services/ModelBuilder/playground"
 import { OpsWidget } from "../components/OpsWidget";
 import { NodeModel } from "../components/Node/NodeModel";
+import { ModelBuilderReducer, IModelBuilderState } from "../services/ModelBuilder"
+import { CustomLoader as Loader } from "../components/Loader";
+import { generateTFModel, TensorflowIntermediateModelNode } from "../tf-bindings"
 import ops from "../tf-bindings/ops";
+import { SymbolicTensor } from "@tensorflow/tfjs-node";
 
-interface IModelBuilderProps {
+interface IModelBuilderComponentProps {
     
 }
-interface IModelBuilderState {
+interface IModelBuilderComponentState {
     update: boolean;
+    isLoading: boolean;
 }
 
-const ModelBuilder: React.FC<IModelBuilderProps> = (props) => {
+const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     const diagramApp: DiagramApplication = DiagramApplication.getInstance();
-    const [state, setState] = useState<IModelBuilderState>({ update: false });
+    const [state, setState] = useState<IModelBuilderComponentState>({ 
+        update: false, 
+        isLoading: false 
+    });
+    const [{ nodes }, dispatch] = useReducer(ModelBuilderReducer, { nodes: [] })
 
     const forceRender = () => {
         setState({ ...state, update: !state.update });
     }
 
-    const addNode = (name: string, args: any, event: any) => {
+    const addNode = async (name: string, args: any, event: any) => {
         let node: NodeModel;
         node = new NodeModel({name, args});
 
@@ -31,7 +40,24 @@ const ModelBuilder: React.FC<IModelBuilderProps> = (props) => {
         node.setPosition(point);
         diagramApp.getDiagramEngine().getModel().addNode(node);
         
+        /**
+         * Use state from reducer to check if isLoading. This is because
+         * when link label update is performed then tfGraph is analyzed
+         * outside of this component scope. Hence this component cannot know 
+         * if tfGraph is finished analyzing. 
+         * 
+         * 1) Dispatch action UPDATE_LINK_LABEL and isLoading true
+         * 2) someVar = parseGraph
+         * 3) Pass someVar to tfGraph analyzing utility.
+         * 4) await analyzing
+         * 5) Dispatch action isLoading false
+         */
+
         forceRender();
+        setState({ ...state, isLoading: true })
+        const intermediateModel = await parseGraph();
+        const model = generateTFModel(intermediateModel)
+        setState({ ...state, isLoading: false })
     }
     const addPresetModel = (data: any) => {
         /**
@@ -83,6 +109,83 @@ const ModelBuilder: React.FC<IModelBuilderProps> = (props) => {
         forceRender();
         return;
     }
+    const  parseGraph = async () => {
+        /**
+         * This function parses Diagram Nodes to a format that
+         * is accepted by gql server
+         */
+        const links = diagramApp.getActiveDiagram().getLinks();
+        
+        const edges: [TensorflowIntermediateModelNode, TensorflowIntermediateModelNode][] = [];
+
+        links.forEach(link => {
+            const src = link.getSourcePort().getParent();
+            const trg = link.getTargetPort().getParent();
+            const srcOptions = src.getOptions()
+            const trgOptions = trg.getOptions();
+            if (srcOptions.) {
+                const node1 = {
+                    id: srcOptions.id,
+                    //@ts-ignore
+                    ops: srcOptions.name,
+                    //@ts-ignore
+                    args: src.args,
+                    inputs: [],
+                    outputs: ,
+                    edges: []
+                }
+
+                const node2 = {
+                    id: link.getTargetPort().getParent().getOptions().id,
+                    //@ts-ignore
+                    ops: link.getTargetPort().getParent().getOptions().name,
+                    //@ts-ignore
+                    args: link.getTargetPort().getParent().args
+                }
+                edges.push([node1, node2]);
+            }
+        });
+
+        /*
+         * 1) Get all nodes.
+         * 2) For all edges add node ids to input and output
+         *      example: edge -> [node["1"], node["2"]], 
+         *               add node["1"].edges = node["2"],
+         *               add node["2"].inputs = [node["1"]]
+         */
+        let nodes: TensorflowIntermediateModelNode;
+
+        edges.forEach((edge: any) => {
+            const [srcNode, trgNode] = edge;
+
+            if (!nodes[srcNode.id]) {
+                nodes[srcNode.id] = { ...srcNode };
+            }
+            if (nodes[srcNode.id].edges) {
+                nodes[srcNode.id].edges.push(trgNode.id);
+            } else {
+                nodes[srcNode.id].edges = [trgNode.id];
+            }
+            if (!nodes[srcNode.id].inputs)   nodes[srcNode.id].inputs = []
+
+            if (!nodes[trgNode.id]) {
+                nodes[trgNode.id] = { ...trgNode };
+            }
+            if (nodes[trgNode.id].inputs) {
+                nodes[trgNode.id].inputs.push(srcNode.id);
+            } else {
+                nodes[trgNode.id].inputs = [srcNode.id];
+            }
+            if (!nodes[trgNode.id].edges)   nodes[trgNode.id].edges = []
+        });
+        
+        /* Convert object to array and stringify */
+        const nodeVals = Object.values(nodes);
+        
+        return nodeVals;
+    }
+    console.log(state);
+    
     return <Container fluid>
         <Playground
             renderAvailableOps={() => <OpsWidget availableOps={ops} />} 
@@ -92,6 +195,7 @@ const ModelBuilder: React.FC<IModelBuilderProps> = (props) => {
                 engine={diagramApp.getDiagramEngine()} 
                 className={className} 
             />)}
+            renderLoader={() => <Loader isActive={state.isLoading} size="tiny" label="Analyzing" />}
         />
     </Container>
 }
