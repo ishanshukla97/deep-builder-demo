@@ -10,7 +10,6 @@ import { ModelBuilderReducer, IModelBuilderState } from "../services/ModelBuilde
 import { CustomLoader as Loader } from "../components/Loader";
 import { generateTFModel, TensorflowIntermediateModelNode } from "../tf-bindings"
 import ops from "../tf-bindings/ops";
-import { SymbolicTensor } from "@tensorflow/tfjs-node";
 
 interface IModelBuilderComponentProps {
     
@@ -123,7 +122,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             const trg = link.getTargetPort().getParent();
             const srcOptions = src.getOptions()
             const trgOptions = trg.getOptions();
-            if (srcOptions.) {
+            if (srcOptions.id && trgOptions.id) {
                 const node1 = {
                     id: srcOptions.id,
                     //@ts-ignore
@@ -131,16 +130,17 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                     //@ts-ignore
                     args: src.args,
                     inputs: [],
-                    outputs: ,
                     edges: []
                 }
 
                 const node2 = {
-                    id: link.getTargetPort().getParent().getOptions().id,
+                    id: trgOptions.id,
                     //@ts-ignore
-                    ops: link.getTargetPort().getParent().getOptions().name,
+                    ops: trgOptions.name,
                     //@ts-ignore
-                    args: link.getTargetPort().getParent().args
+                    args: trg.args,
+                    inputs: [],
+                    edges: []
                 }
                 edges.push([node1, node2]);
             }
@@ -153,9 +153,9 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
          *               add node["1"].edges = node["2"],
          *               add node["2"].inputs = [node["1"]]
          */
-        let nodes: TensorflowIntermediateModelNode;
+        let nodes: Record<string, TensorflowIntermediateModelNode> = {};
 
-        edges.forEach((edge: any) => {
+        edges.forEach((edge: [TensorflowIntermediateModelNode, TensorflowIntermediateModelNode]) => {
             const [srcNode, trgNode] = edge;
 
             if (!nodes[srcNode.id]) {
@@ -180,11 +180,10 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         });
         
         /* Convert object to array and stringify */
-        const nodeVals = Object.values(nodes);
+        console.log(nodes, "parseGraph");
         
-        return nodeVals;
+        return Object.values(nodes);
     }
-    console.log(state);
     
     return <Container fluid>
         <Playground

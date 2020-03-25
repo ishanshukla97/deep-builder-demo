@@ -1,4 +1,4 @@
-import * as tf from "@tensorflow/tfjs-node";
+import * as tf from "@tensorflow/tfjs";
 
 export const mappings = {
     averagePooling2d: tf.layers.averagePooling2d,
