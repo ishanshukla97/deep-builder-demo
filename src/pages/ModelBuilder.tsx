@@ -15,20 +15,32 @@ interface IModelBuilderComponentProps {
     
 }
 interface IModelBuilderComponentState {
-    update: boolean;
+    forceUpdate: boolean;
     isLoading: boolean;
 }
 
 const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     const diagramApp: DiagramApplication = DiagramApplication.getInstance();
+
+    diagramApp.getActiveDiagram().registerListener({nodesUpdated: async () => {
+        /**
+         * 1) Use context and reducer for loading states
+         * 2) Handle error here
+         */
+        setState({ ...state, isLoading: true })
+        const intermediateModel = await parseGraph();
+        const model = generateTFModel(intermediateModel)
+        setState({ ...state, isLoading: false })
+    }})
+
     const [state, setState] = useState<IModelBuilderComponentState>({ 
-        update: false, 
+        forceUpdate: false, 
         isLoading: false 
     });
     const [{ nodes }, dispatch] = useReducer(ModelBuilderReducer, { nodes: [] })
 
     const forceRender = () => {
-        setState({ ...state, update: !state.update });
+        setState({ ...state, forceUpdate: !state.forceUpdate });
     }
 
     const addNode = async (name: string, args: any, event: any) => {
@@ -38,25 +50,8 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         let point = diagramApp.getDiagramEngine().getRelativeMousePoint(event);
         node.setPosition(point);
         diagramApp.getDiagramEngine().getModel().addNode(node);
-        
-        /**
-         * Use state from reducer to check if isLoading. This is because
-         * when link label update is performed then tfGraph is analyzed
-         * outside of this component scope. Hence this component cannot know 
-         * if tfGraph is finished analyzing. 
-         * 
-         * 1) Dispatch action UPDATE_LINK_LABEL and isLoading true
-         * 2) someVar = parseGraph
-         * 3) Pass someVar to tfGraph analyzing utility.
-         * 4) await analyzing
-         * 5) Dispatch action isLoading false
-         */
 
         forceRender();
-        setState({ ...state, isLoading: true })
-        const intermediateModel = await parseGraph();
-        const model = generateTFModel(intermediateModel)
-        setState({ ...state, isLoading: false })
     }
     const addPresetModel = (data: any) => {
         /**

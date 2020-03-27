@@ -4,7 +4,7 @@ import { DeleteItemsAction } from "@projectstorm/react-canvas-core";
 import { NodeFactory } from "../../components/Node/NodeFactory"
 
 export class DiagramApplication {
-    protected activeModel: any;
+    protected activeModel: SRD.DiagramModel
     protected diagramEngine: SRD.DiagramEngine;
 
     public static getInstance(): DiagramApplication {
