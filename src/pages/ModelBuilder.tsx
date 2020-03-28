@@ -1,15 +1,16 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import { Container } from "semantic-ui-react";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
+import { toast, ToastOptions } from "react-toastify";
 
 import Playground from "../components/PlaygroundWidget"
 import { DiagramApplication } from "../services/ModelBuilder/playground"
 import { OpsWidget } from "../components/OpsWidget";
 import { NodeModel } from "../components/Node/NodeModel";
-import { ModelBuilderReducer, IModelBuilderState } from "../services/ModelBuilder"
 import { CustomLoader as Loader } from "../components/Loader";
 import { generateTFModel, TensorflowIntermediateModelNode } from "../tf-bindings"
 import ops from "../tf-bindings/ops";
+import { DefaultLinkModel } from "@projectstorm/react-diagrams";
 
 interface IModelBuilderComponentProps {
     
@@ -17,29 +18,39 @@ interface IModelBuilderComponentProps {
 interface IModelBuilderComponentState {
     forceUpdate: boolean;
     isLoading: boolean;
+    error?: string;
+}
+
+const toastErrorSettings: ToastOptions = {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true
 }
 
 const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     const diagramApp: DiagramApplication = DiagramApplication.getInstance();
 
-    diagramApp.getActiveDiagram().registerListener({nodesUpdated: async () => {
-        /**
-         * 1) Use context and reducer for loading states
-         * 2) Handle error here
-         */
-        setState({ ...state, isLoading: true })
-        const intermediateModel = await parseGraph();
-        const model = generateTFModel(intermediateModel)
-        setState({ ...state, isLoading: false })
-    }})
-
     const [state, setState] = useState<IModelBuilderComponentState>({ 
         forceUpdate: false, 
-        isLoading: false 
+        isLoading: false,
+        error: ""
     });
-    const [{ nodes }, dispatch] = useReducer(ModelBuilderReducer, { nodes: [] })
+
+    useEffect(() => {
+        try {
+            if (state.error) {
+                toast.error(state.error, toastErrorSettings);
+            }
+        } catch (e) {
+            return;
+        }
+    }, [state.error])
 
     const forceRender = () => {
+        diagramApp.getDiagramEngine().repaintCanvas()
         setState({ ...state, forceUpdate: !state.forceUpdate });
     }
 
@@ -51,7 +62,52 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         node.setPosition(point);
         diagramApp.getDiagramEngine().getModel().addNode(node);
 
+        triggerTFGraphAnalyzer();
         forceRender();
+    }
+
+    const triggerTFGraphAnalyzer = async() => {
+        try {
+            setState({ ...state, isLoading: true })
+            const intermediateModel = await parseGraph();
+            const [tfModel, graph] = generateTFModel(intermediateModel);
+            populateLinkLabels(graph)
+            setState({ ...state, isLoading: false })
+        } catch (e) {
+            if (e.message !== state.error) {
+                setState({ ...state, error: e.message});
+            }
+            setState({ ...state, isLoading: false});
+            return;
+        }
+    }
+
+    const populateLinkLabels = async (graph: any) => {
+        const ids = Object.keys(graph)
+        for (const nodeId of ids) {
+            const node = diagramApp.getActiveDiagram().getNode(nodeId);
+            if (node) {
+                const port = node.getPort("out");
+                if (port) {
+                    const linkIds = Object.keys(port.getLinks());
+                    const linksObj = port.getLinks();
+                    
+                    for (const id of linkIds) {
+                        const newLabel = "???" + graph[nodeId].outputs.shape.toString();
+                        //Remove previous label before adding new ones
+                        const srcPort = (linksObj[id] as DefaultLinkModel).getSourcePort();
+                        const trgPort = (linksObj[id] as DefaultLinkModel).getTargetPort();
+                        (linksObj[id] as DefaultLinkModel).remove();
+                        const newLink = new DefaultLinkModel()
+                        newLink.setTargetPort(trgPort);
+                        newLink.setSourcePort(srcPort);
+                        newLink.addLabel(newLabel);
+                        diagramApp.getActiveDiagram().addLink(newLink);
+                    }
+                }
+            }
+        }
+        
     }
     const addPresetModel = (data: any) => {
         /**
@@ -175,8 +231,6 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         });
         
         /* Convert object to array and stringify */
-        console.log(nodes, "parseGraph");
-        
         return Object.values(nodes);
     }
     

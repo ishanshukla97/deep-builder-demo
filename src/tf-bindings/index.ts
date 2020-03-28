@@ -75,6 +75,7 @@ export const generateTFModel = (model: TensorflowIntermediateModelNode[]) => {
     if (inputTensors && outputTensors) {
         // @ts-ignore
         const tfModel = tf.model({ inputs: inputTensors, outputs: outputTensors });
+
         return [tfModel, graphObj];
     }
 }

@@ -7,11 +7,14 @@ export const ACTION_TYPES = {
 export interface IModelBuilderState {
     nodes: {
         id: string;
+        outLinkLabel: string; 
     }[];
-
+    isLoading: {
+        label?: string;
+    }
 }
 
-export const ModelBuilderReducer = (state: any, action: any) => {
+export const modelBuilderReducer = (state: any, action: any) => {
     switch (action.type) {
         case ACTION_TYPES.UPDATE_LINK_LABELS:
             return { ...state };
