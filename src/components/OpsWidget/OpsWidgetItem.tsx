@@ -1,4 +1,5 @@
 import React from "react";
+import { Label } from "semantic-ui-react";
 
 export interface OpsWidgetItemProps {
     model: any;
@@ -8,39 +9,34 @@ export interface OpsWidgetItemProps {
     data?: any;
 }
 
-export default class OpsWidgetItem extends React.Component<OpsWidgetItemProps> {
-    constructor (props: OpsWidgetItemProps) {
-        super(props);
-        this.handleDragStart = this.handleDragStart.bind(this);
-    }
-
-    handleDragStart (event: any) {
-        if (this.props.model.type === "_Model") {
+export const OpsWidgetItem: React.FC<OpsWidgetItemProps> = props => {
+    const handleDragStart =  (event: any) => {
+        if (props.model.type === "_Model") {
             event.dataTransfer.setData("model-node", JSON.stringify({ 
-                model: this.props.model,
-                name: this.props.name,
-                data: this.props.data
+                model: props.model,
+                name: props.name,
+                data: props.data
             }))
             return;
         }
         event.dataTransfer.setData("ops-node", JSON.stringify({ 
-            model: this.props.model,
-            name: this.props.name,
-            args: this.props.args
+            model: props.model,
+            name: props.name,
+            args: props.args,
+            color: props.color
         }));
         return;
     }
-
-    render () {
-        return (
-            <div
-                color={this.props.color}
-                draggable={true}
-                onDragStart={this.handleDragStart}
-                className="ops-bucket__item"
-            >
-                { this.props.name }
+    
+    return (
+        <div
+            draggable={true}
+            onDragStart={handleDragStart}
+            className={"ops-bucket__item " + "ops-bucket--" + props.color}
+        >
+            <div className="ops-bucket__label">
+                {props.name}
             </div>
-        )
-    }
+        </div>
+    )
 }

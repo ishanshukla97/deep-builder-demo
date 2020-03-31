@@ -6,7 +6,8 @@ import _ from "lodash"
 export interface NodeModelOptions extends BaseModelOptions {
     args?: any
     defaultArgs?: any;
-    name?: string
+    name?: string;
+    color?: string;
 }
 export interface NodeModelGenerics extends BaseNodeModelGenerics {
     OPTIONS: NodeModelOptions;
@@ -15,6 +16,7 @@ export interface NodeModelGenerics extends BaseNodeModelGenerics {
 export class NodeModel extends BaseNodeModel<NodeModelGenerics> {
     args: any;
     name!: string;
+    color?: string
 	protected portsIn: DefaultPortModel[];
 	protected portsOut: DefaultPortModel[];
 
@@ -22,12 +24,14 @@ export class NodeModel extends BaseNodeModel<NodeModelGenerics> {
         super({
             ...options,
             type: options.type || "custom-node",
-            name: options.name
+            name: options.name,
+            color: options.color || "default-color"
         });
         this.name = options.name || "default-name"
         this.args = { ...options.defaultArgs }
         this.portsIn = [];
         this.portsOut = [];
+        this.color = options.color || "default-color";
         
         if (initializePorts){
             this.addPort(

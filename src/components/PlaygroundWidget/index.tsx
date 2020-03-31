@@ -1,11 +1,12 @@
 import React from "react";
 
 import "./index.scss";
+import { Container } from "semantic-ui-react";
 
 export interface PlaygroundWidgetProps {
     renderAvailableOps: () => any;
     renderCanvasWidget: (className?: string) => any;
-    handleAddNode: (name: string, args: any, event: any) => any;
+    handleAddNode: (name: string, args: any, color: string, event: any) => any;
     handleAddPresetModel: (data: any) => any;
     renderLoader: () => any;
 }
@@ -29,7 +30,7 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
     handleDrop (event: any) {
         if (event.dataTransfer.getData('ops-node')) {
             const data = JSON.parse(event.dataTransfer.getData('ops-node'));
-            this.props.handleAddNode(data.name, data.args, event);
+            this.props.handleAddNode(data.name, data.args, data.color, event);
             return;
         }
         let data = JSON.parse(event.dataTransfer.getData('model-node'));
@@ -40,8 +41,7 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
 
     render () {
         return (
-            <div className="playground-widget">
-                <div className="playground-widget__header">Playground widget Header</div>
+            <Container fluid className="playground-widget">
                 <div className="playground-widget__container">
                     { this.props.renderAvailableOps() }
                     <div
@@ -55,7 +55,7 @@ export default class PlaygroundWidget extends React.Component<PlaygroundWidgetPr
                         { this.props.renderCanvasWidget("playground-widget--canvas-wrapper") }
                     </div>
                 </div>
-            </div>
+            </Container>
         )
     }
 }

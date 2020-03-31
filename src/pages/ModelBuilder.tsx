@@ -54,9 +54,9 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         setState({ ...state, forceUpdate: !state.forceUpdate });
     }
 
-    const addNode = async (name: string, args: any, event: any) => {
+    const addNode = async (name: string, args: any, color: string, event: any) => {
         let node: NodeModel;
-        node = new NodeModel({name, args});
+        node = new NodeModel({name, args, color});
 
         let point = diagramApp.getDiagramEngine().getRelativeMousePoint(event);
         node.setPosition(point);
