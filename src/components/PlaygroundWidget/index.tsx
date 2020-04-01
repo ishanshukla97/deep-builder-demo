@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./index.scss";
-import { Container } from "semantic-ui-react";
+import { Container, Button, Input } from "semantic-ui-react";
 
 export interface PlaygroundWidgetProps {
     renderAvailableOps: () => any;
@@ -9,53 +9,47 @@ export interface PlaygroundWidgetProps {
     handleAddNode: (name: string, args: any, color: string, event: any) => any;
     handleAddPresetModel: (data: any) => any;
     renderLoader: () => any;
+    addPreset: (name: string) => any;
 }
 export interface PlaygroundWidgetState {
-    isParsing: boolean;
-    isAdding: boolean;
-    modelName: string;
+    name: string;
 }
 
-export default class PlaygroundWidget extends React.Component<PlaygroundWidgetProps, PlaygroundWidgetState> {
-    constructor (props: PlaygroundWidgetProps) {
-        super(props);
-        this.state = { 
-            isParsing: false, 
-            isAdding: false,
-            modelName: ""
-        }
-        this.handleDrop = this.handleDrop.bind(this);
-    }
-
-    handleDrop (event: any) {
+export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
+    const [state, setState] = React.useState<PlaygroundWidgetState>({ name: "" })
+    const handleDrop = (event: any) => {
         if (event.dataTransfer.getData('ops-node')) {
             const data = JSON.parse(event.dataTransfer.getData('ops-node'));
-            this.props.handleAddNode(data.name, data.args, data.color, event);
+            props.handleAddNode(data.name, data.args, data.color, event);
             return;
         }
         let data = JSON.parse(event.dataTransfer.getData('model-node'));
         if (data.data)  data = JSON.parse(data.data)
         
-        this.props.handleAddPresetModel(data);
+        props.handleAddPresetModel(data);
+    }
+    const handleName = (e:any) => {
+        console.log(e.target.value);
+        setState({ name: e.target.value })
     }
 
-    render () {
-        return (
-            <Container fluid className="playground-widget">
-                <div className="playground-widget__container">
-                    { this.props.renderAvailableOps() }
-                    <div
-                        onDrop={this.handleDrop}
-                        onDragOver={event => {
-                            event.preventDefault();
-                        }}
-                        className="playground-widget__content"
-                    >
-                        { this.props.renderLoader() }
-                        { this.props.renderCanvasWidget("playground-widget--canvas-wrapper") }
-                    </div>
+    return (
+        <Container fluid className="playground-widget">
+            <div className="playground-widget__container">
+                { props.renderAvailableOps() }
+                <div
+                    onDrop={handleDrop}
+                    onDragOver={event => {
+                        event.preventDefault();
+                    }}
+                    className="playground-widget__content"
+                >
+                    { props.renderLoader() }
+                    { props.renderCanvasWidget("playground-widget--canvas-wrapper") }
                 </div>
-            </Container>
-        )
-    }
+            </div>
+            <Input label="model name" onChange={handleName} />
+            <Button onClick={(e) => props.addPreset(state.name)}>Meep</Button>
+        </Container>
+    )
 }

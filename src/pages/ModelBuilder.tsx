@@ -3,7 +3,7 @@ import { Container } from "semantic-ui-react";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import { toast, ToastOptions } from "react-toastify";
 
-import Playground from "../components/PlaygroundWidget"
+import {PlaygroundWidget} from "../components/PlaygroundWidget"
 import { DiagramApplication } from "../services/ModelBuilder/playground"
 import { OpsWidget } from "../components/OpsWidget";
 import { NodeModel } from "../components/Node/NodeModel";
@@ -234,8 +234,15 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         return Object.values(nodes);
     }
     
+    const addPreset = async (name: string) => {
+        const currentModel = diagramApp.getDiagramEngine().getModel().serialize();
+        const stringifiedModel = await JSON.stringify(currentModel);
+        const modelInput = { model: stringifiedModel, name }
+        console.log(modelInput);
+        
+    }
     return <Container fluid>
-        <Playground
+        <PlaygroundWidget
             renderAvailableOps={() => <OpsWidget availableOps={ops} />} 
             handleAddNode={addNode}
             handleAddPresetModel={addPresetModel}
@@ -244,6 +251,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 className={className} 
             />)}
             renderLoader={() => <Loader isActive={state.isLoading} size="tiny" label="Analyzing" />}
+            addPreset={addPreset}
         />
     </Container>
 }

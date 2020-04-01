@@ -6,6 +6,7 @@
     border: 1px solid black;
     border-radius: 0.8rem;
     min-width: 9.5rem;
+    max-width: 13rem;
 
     &--selected {
         border: 1px solid rgb(255, 196, 0);
@@ -53,17 +54,29 @@
             color: black;
         }
         &--purple {
-            background: rgb(255, 104, 255);
+            background: linear-gradient(95deg, 
+            rgb(255, 104, 255) 0%, 
+            rgb(124, 51, 124) 80%, 
+            rgba(25, 0, 27, 0.268) 100%);
         }
         &--cyan {
-            background: cyan;
+            background: linear-gradient(95deg, 
+            cyan 0%, 
+            rgb(21, 107, 107) 80%, 
+            rgba(0, 22, 27, 0.268) 100%);
             color: black;
         }
         &--dark-blue {
-            background: rgb(0, 0, 168);
+            background: linear-gradient(95deg, 
+            rgb(0, 17, 255) 0%, 
+            rgb(0, 0, 168) 80%, 
+            rgba(0, 0, 27, 0.268) 100%);
         }
         &--green {
-            background: rgb(42, 143, 42);
+            background: linear-gradient(95deg, 
+            rgb(0, 206, 0) 0%, 
+            rgb(3, 88, 0)0%, 
+            rgba(6, 27, 0, 0.268) 100%);
         }
     }
 
