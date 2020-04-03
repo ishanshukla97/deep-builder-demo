@@ -1,16 +1,22 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "semantic-ui-react";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
+import { DefaultLinkModel } from "@projectstorm/react-diagrams";
 import { toast, ToastOptions } from "react-toastify";
 
-import {PlaygroundWidget} from "../components/PlaygroundWidget"
-import { DiagramApplication } from "../services/ModelBuilder/playground"
+/* Import components */
+import { PlaygroundWidget } from "../components/PlaygroundWidget"
 import { OpsWidget } from "../components/OpsWidget";
 import { NodeModel } from "../components/Node/NodeModel";
 import { CustomLoader as Loader } from "../components/Loader";
-import { generateTFModel, TensorflowIntermediateModelNode } from "../tf-bindings"
-import ops from "../tf-bindings/ops";
-import { DefaultLinkModel } from "@projectstorm/react-diagrams";
+
+/* Import services */
+import { generateTFModel, parseGraph } from "../services"
+import { DiagramApplication } from "../services/playground"
+
+/* Import static content */
+import ops from "../static/ops";
+
 
 interface IModelBuilderComponentProps {
     
@@ -69,11 +75,16 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     const triggerTFGraphAnalyzer = async() => {
         try {
             setState({ ...state, isLoading: true })
-            const intermediateModel = await parseGraph();
+            const intermediateModel = await parseGraph(diagramApp);
+
+            if (!intermediateModel) return;
+
             const [tfModel, graph] = generateTFModel(intermediateModel);
             populateLinkLabels(graph)
             setState({ ...state, isLoading: false })
         } catch (e) {
+            console.log(e, "e");
+            
             if (e.message !== state.error) {
                 setState({ ...state, error: e.message});
             }
@@ -158,80 +169,6 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         })
         forceRender();
         return;
-    }
-    const  parseGraph = async () => {
-        /**
-         * This function parses Diagram Nodes to a format that
-         * is accepted by gql server
-         */
-        const links = diagramApp.getActiveDiagram().getLinks();
-        
-        const edges: [TensorflowIntermediateModelNode, TensorflowIntermediateModelNode][] = [];
-
-        links.forEach(link => {
-            const src = link.getSourcePort().getParent();
-            const trg = link.getTargetPort().getParent();
-            const srcOptions = src.getOptions()
-            const trgOptions = trg.getOptions();
-            if (srcOptions.id && trgOptions.id) {
-                const node1 = {
-                    id: srcOptions.id,
-                    //@ts-ignore
-                    ops: srcOptions.name,
-                    //@ts-ignore
-                    args: src.args,
-                    inputs: [],
-                    edges: []
-                }
-
-                const node2 = {
-                    id: trgOptions.id,
-                    //@ts-ignore
-                    ops: trgOptions.name,
-                    //@ts-ignore
-                    args: trg.args,
-                    inputs: [],
-                    edges: []
-                }
-                edges.push([node1, node2]);
-            }
-        });
-
-        /*
-         * 1) Get all nodes.
-         * 2) For all edges add node ids to input and output
-         *      example: edge -> [node["1"], node["2"]], 
-         *               add node["1"].edges = node["2"],
-         *               add node["2"].inputs = [node["1"]]
-         */
-        let nodes: Record<string, TensorflowIntermediateModelNode> = {};
-
-        edges.forEach((edge: [TensorflowIntermediateModelNode, TensorflowIntermediateModelNode]) => {
-            const [srcNode, trgNode] = edge;
-
-            if (!nodes[srcNode.id]) {
-                nodes[srcNode.id] = { ...srcNode };
-            }
-            if (nodes[srcNode.id].edges) {
-                nodes[srcNode.id].edges.push(trgNode.id);
-            } else {
-                nodes[srcNode.id].edges = [trgNode.id];
-            }
-            if (!nodes[srcNode.id].inputs)   nodes[srcNode.id].inputs = []
-
-            if (!nodes[trgNode.id]) {
-                nodes[trgNode.id] = { ...trgNode };
-            }
-            if (nodes[trgNode.id].inputs) {
-                nodes[trgNode.id].inputs.push(srcNode.id);
-            } else {
-                nodes[trgNode.id].inputs = [srcNode.id];
-            }
-            if (!nodes[trgNode.id].edges)   nodes[trgNode.id].edges = []
-        });
-        
-        /* Convert object to array and stringify */
-        return Object.values(nodes);
     }
     
     const addPreset = async (name: string) => {
