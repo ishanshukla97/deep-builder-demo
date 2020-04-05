@@ -11,8 +11,10 @@ import { NodeModel } from "../components/Node/NodeModel";
 import { CustomLoader as Loader } from "../components/Loader";
 
 /* Import services */
-import { generateTFModel, parseGraph } from "../services"
-import { DiagramApplication } from "../services/playground"
+import { generateTFModel, parseGraph } from "../services/playground"
+
+/* Import utilities */
+import { DiagramApplication } from "../utils/playground"
 
 /* Import static content */
 import ops from "../static/ops";
@@ -24,7 +26,10 @@ interface IModelBuilderComponentProps {
 interface IModelBuilderComponentState {
     forceUpdate: boolean;
     isLoading: boolean;
-    error?: string;
+    error?: {
+        message: string;
+        type: string;
+    };
 }
 
 const toastErrorSettings: ToastOptions = {
@@ -42,13 +47,18 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     const [state, setState] = useState<IModelBuilderComponentState>({ 
         forceUpdate: false, 
         isLoading: false,
-        error: ""
+        error: {
+            message: "",
+            type: ""
+        }
     });
 
     useEffect(() => {
         try {
-            if (state.error) {
-                toast.error(state.error, toastErrorSettings);
+            if (state.error?.type === "Error") {
+                toast.error(state.error.message, toastErrorSettings);
+            } else if (state.error?.type === "TypeError") {
+                toast.error("Oops! An unknown error occured.", toastErrorSettings);
             }
         } catch (e) {
             return;
@@ -81,15 +91,13 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
 
             const [tfModel, graph] = generateTFModel(intermediateModel);
             populateLinkLabels(graph)
-            setState({ ...state, isLoading: false })
         } catch (e) {
-            console.log(e, "e");
-            
-            if (e.message !== state.error) {
-                setState({ ...state, error: e.message});
+            if (e.message !== state.error?.message) {
+                setState({ ...state, error: { message: e.message, type: e.name }});
             }
-            setState({ ...state, isLoading: false});
             return;
+        } finally {
+            setState({ ...state, isLoading: false});
         }
     }
 
@@ -118,6 +126,12 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 }
             }
         }
+        /**When links are removed and added again to diagram
+         * they do not appear at the correct place. This is a
+         * bug. Selecting each node makes them appear at their 
+         * respective places again. 
+         * ***************This is a quick fix****************
+         */
         
     }
     const addPresetModel = (data: any) => {

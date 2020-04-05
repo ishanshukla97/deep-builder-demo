@@ -8,7 +8,7 @@ interface IPageProps {
 
 const Pages: React.FC<IPageProps> = props => {
     return <>
-        <Route path="/" render={() => <ModelBuilder />} />
+        <Route path="/" render={() => (<ModelBuilder />)} />
     </>
 }
 
