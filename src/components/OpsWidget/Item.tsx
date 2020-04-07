@@ -11,14 +11,6 @@ export interface OpsWidgetItemProps {
 
 export const OpsWidgetItem: React.FC<OpsWidgetItemProps> = props => {
     const handleDragStart =  (event: any) => {
-        if (props.model.type === "_Model") {
-            event.dataTransfer.setData("model-node", JSON.stringify({ 
-                model: props.model,
-                name: props.name,
-                data: props.data
-            }))
-            return;
-        }
         event.dataTransfer.setData("ops-node", JSON.stringify({ 
             model: props.model,
             name: props.name,

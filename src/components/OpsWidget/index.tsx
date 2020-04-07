@@ -1,6 +1,6 @@
 import React from "react";
 
-import { OpsWidgetItem } from "./OpsWidgetItem";
+import { OpsWidgetItem } from "./Item";
 import "./index.scss";
 
 interface IArgs {
@@ -19,7 +19,7 @@ interface IOpsWidgetProps {
 }
 
 export const OpsWidget: React.FC<IOpsWidgetProps> = props => {
-    return <div className="ops-bucket">
+    return <div>
         {
             props.availableOps.map(op => (<OpsWidgetItem
                 model="custom"

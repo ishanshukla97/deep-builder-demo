@@ -5,6 +5,7 @@ import { Container, Button, Input } from "semantic-ui-react";
 
 export interface PlaygroundWidgetProps {
     renderAvailableOps: () => any;
+    renderAvailablePresets: () => any;
     renderCanvasWidget: (className?: string) => any;
     handleAddNode: (name: string, args: any, color: string, event: any) => any;
     handleAddPresetModel: (data: any) => any;
@@ -29,14 +30,16 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
         props.handleAddPresetModel(data);
     }
     const handleName = (e:any) => {
-        console.log(e.target.value);
-        setState({ name: e.target.value })
+        setState({ name: e.target.value });
     }
 
     return (
         <Container fluid className="playground-widget">
             <div className="playground-widget__container">
-                { props.renderAvailableOps() }
+                <div className="ops-bucket">
+                    { props.renderAvailablePresets() }
+                    { props.renderAvailableOps() }
+                </div>
                 <div
                     onDrop={handleDrop}
                     onDragOver={event => {
@@ -49,7 +52,7 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
                 </div>
             </div>
             <Input label="model name" onChange={handleName} />
-            <Button onClick={(e) => props.addPreset(state.name)}>Meep</Button>
+            <Button onClick={(e) => props.addPreset(state.name)}>JSON</Button>
         </Container>
     )
 }

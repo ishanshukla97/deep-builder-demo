@@ -69,3 +69,46 @@
         transparent 77%, transparent);
     }
 }
+
+.ops-bucket {
+    height: 47rem;
+    width: 20%;
+    background-color: rgb(60, 60, 60);
+    border-radius: 0.5rem;
+    overflow-y: scroll;
+
+    &__item {
+        padding: 0.8rem;
+        color: white;
+        border: 1px solid;
+        border-color: black;
+        border-radius: 0.2rem;
+        background-color: black;
+    }
+    &__label {
+        font-size: 1.5rem;
+    }
+    &--blue {
+        background-color: rgb(100, 123, 255);
+    }
+    &--red {
+        background-color: rgb(255, 95, 95)
+    }
+    &--yellow {
+        background-color: rgb(255, 255, 91);
+        color: black;
+    }
+    &--purple {
+        background-color: rgb(255, 104, 255);
+    }
+    &--cyan {
+        background-color: cyan;
+        color: black;
+    }
+    &--dark-blue {
+        background-color: rgb(0, 0, 168);
+    }
+    &--green {
+        background-color: rgb(42, 143, 42);
+    }
+}

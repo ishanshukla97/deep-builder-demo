@@ -3,6 +3,7 @@ import { mappings as basicMap } from "./basic";
 import { mappings as convMap } from "./convolutional";
 import { mappings as mergeMap } from "./merge";
 import { mappings as poolingMap } from "./pooling";
+import { mappings as batchNormalization } from "./normalization";
 
 
 export const mappings: any = {
@@ -10,5 +11,6 @@ export const mappings: any = {
     ...basicMap,
     ...convMap,
     ...mergeMap,
-    ...poolingMap
+    ...poolingMap,
+    ...batchNormalization
 };

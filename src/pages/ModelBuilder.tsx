@@ -9,6 +9,7 @@ import { PlaygroundWidget } from "../components/PlaygroundWidget"
 import { OpsWidget } from "../components/OpsWidget";
 import { NodeModel } from "../components/Node/NodeModel";
 import { CustomLoader as Loader } from "../components/Loader";
+import { PresetWidget } from "../components/PresetsWidget";
 
 /* Import services */
 import { generateTFModel, parseGraph } from "../services/playground"
@@ -18,7 +19,7 @@ import { DiagramApplication } from "../utils/playground"
 
 /* Import static content */
 import ops from "../static/ops";
-
+import presets from "../static/presets.json";
 
 interface IModelBuilderComponentProps {
     
@@ -132,7 +133,10 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
          * respective places again. 
          * ***************This is a quick fix****************
          */
-        
+        const nodes = diagramApp.getActiveDiagram().getNodes();
+        for (const node of nodes) {
+            node.setSelected(true);
+        }        
     }
     const addPresetModel = (data: any) => {
         /**
@@ -157,8 +161,13 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         });
 
         nodes.forEach((nodePreset: any) => {
-            const { name, args, options, x, y, id } = nodePreset
-            const node = new NodeModel({ name, args: options.args, defaultArgs: args });
+            const { name, args, options, x, y, id } = nodePreset;
+            
+            const node = new NodeModel({ name, 
+                args: options.args, 
+                color: options.color,
+                defaultArgs: args 
+            });
             node.setPosition(x, y);
             node.setSelected(true);
             diagramApp.getDiagramEngine().getModel().addNode(node);
@@ -192,9 +201,11 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         console.log(modelInput);
         
     }
+    
     return <Container fluid>
         <PlaygroundWidget
             renderAvailableOps={() => <OpsWidget availableOps={ops} />} 
+            renderAvailablePresets={() => <PresetWidget presets={presets} />}
             handleAddNode={addNode}
             handleAddPresetModel={addPresetModel}
             renderCanvasWidget={(className?: string) => (<CanvasWidget 
