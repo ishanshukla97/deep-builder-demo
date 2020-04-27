@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./index.scss";
-import { Container, Button, Input } from "semantic-ui-react";
+import { Container, Button, Input, Icon } from "semantic-ui-react";
 
 export interface PlaygroundWidgetProps {
     renderAvailableOps: () => any;
@@ -11,6 +11,7 @@ export interface PlaygroundWidgetProps {
     handleAddPresetModel: (data: any) => any;
     renderLoader: () => any;
     addPreset: (name: string) => any;
+    onDownload: () => any;
 }
 export interface PlaygroundWidgetState {
     name: string;
@@ -50,9 +51,11 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
                     { props.renderLoader() }
                     { props.renderCanvasWidget("playground-widget--canvas-wrapper") }
                 </div>
-            </div>
-            <Input label="model name" onChange={handleName} />
-            <Button onClick={(e) => props.addPreset(state.name)}>JSON</Button>
+                <button 
+                    onClick={props.onDownload} 
+                    className='playground-widget--btn-download'>
+                    <Icon name='download'/></button>   
+            </div> 
         </Container>
     )
 }

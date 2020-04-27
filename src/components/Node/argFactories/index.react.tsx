@@ -102,7 +102,7 @@ export const MultiSelectFactory: React.FC<MultiSelectFactoryProps> = props => {
         props.onChange(props.label, value)
     }
     
-    return <span style={{ display: "inline-block" }}>{ props.label }<Dropdown 
+    return <div>{ props.label }<Dropdown 
         className="node__input-field"
         inline 
         fluid
@@ -112,5 +112,5 @@ export const MultiSelectFactory: React.FC<MultiSelectFactoryProps> = props => {
         scrolling
         onChange={onChange}
     />
-    </span>
+    </div>
 }

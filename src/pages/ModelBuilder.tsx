@@ -12,7 +12,7 @@ import { CustomLoader as Loader } from "../components/Loader";
 import { PresetWidget } from "../components/PresetsWidget";
 
 /* Import services */
-import { generateTFModel, parseGraph } from "../services/playground"
+import { generateTFModel, parseGraph, tf, downloadTfModelJson } from "../services/playground"
 
 /* Import utilities */
 import { DiagramApplication } from "../utils/playground"
@@ -27,6 +27,7 @@ interface IModelBuilderComponentProps {
 interface IModelBuilderComponentState {
     forceUpdate: boolean;
     isLoading: boolean;
+    model?: tf.LayersModel;
     error?: {
         message: string;
         type: string;
@@ -83,15 +84,22 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         forceRender();
     }
 
-    const triggerTFGraphAnalyzer = async() => {
+    const triggerTFGraphAnalyzer = async(download: boolean = false) => {
         try {
             setState({ ...state, isLoading: true })
             const intermediateModel = await parseGraph(diagramApp);
 
             if (!intermediateModel) return;
 
-            const [tfModel, graph] = generateTFModel(intermediateModel);
-            populateLinkLabels(graph)
+            const modelResult = generateTFModel(intermediateModel);
+            
+            if (download) {
+                const downloadResult = await modelResult
+                ?.tfModel
+                .save('downloads://mymodel');
+            }
+
+            populateLinkLabels(modelResult?.graphObj)
         } catch (e) {
             if (e.message !== state.error?.message) {
                 setState({ ...state, error: { message: e.message, type: e.name }});
@@ -198,8 +206,11 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         const currentModel = diagramApp.getDiagramEngine().getModel().serialize();
         const stringifiedModel = await JSON.stringify(currentModel);
         const modelInput = { model: stringifiedModel, name }
-        console.log(modelInput);
         
+    }
+
+    const handleDownload = () => {
+        triggerTFGraphAnalyzer(true)
     }
     
     return <Container fluid>
@@ -214,6 +225,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             />)}
             renderLoader={() => <Loader isActive={state.isLoading} size="tiny" label="Analyzing" />}
             addPreset={addPreset}
+            onDownload={handleDownload}
         />
     </Container>
 }
