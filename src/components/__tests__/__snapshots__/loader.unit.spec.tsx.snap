@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders loader with correct label 1`] = `
+<div>
+  <div
+    class="custom-loader"
+  >
+    <div
+      class="ui active text inline loader"
+    >
+      my correct label
+    </div>
+  </div>
+</div>
+`;

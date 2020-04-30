@@ -68,6 +68,16 @@
         rgba(255, 255, 255, 0.05) 76%, 
         transparent 77%, transparent);
     }
+    &--btn-download {
+        height: 3.5rem;
+        width: 3rem;
+        border-radius: 20px;
+        border: none;
+        background-color: rgb(118, 197, 118);
+        color: white;
+        padding-left: 10px;
+        cursor: pointer;
+    }
 }
 
 .ops-bucket {

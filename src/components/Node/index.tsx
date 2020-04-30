@@ -101,7 +101,7 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
                         <Icon name='add' className="node--white-imp" />
                         <p className="m-0 node--white-imp">Args</p>
                     </Accordion.Title>
-                    <Accordion.Content active={this.state.showArgs} className="node--white-imp">
+                    <Accordion.Content active={this.state.showArgs} className="node__content node--white-imp">
                         {
                             this.renderArgs(this.props.node.getOptions().args)
                         }

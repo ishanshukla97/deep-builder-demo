@@ -64,7 +64,7 @@ export const generateTFModel = (model: TensorflowIntermediateModelNode[]) => {
         // @ts-ignore
         const tfModel = tf.model({ inputs: inputTensors, outputs: outputTensors });
 
-        return [tfModel, graphObj];
+        return {tfModel, graphObj};
     }
 }
 
@@ -148,4 +148,17 @@ export const parseGraph = async (diagramApp: DiagramApplication) => {
     
     /* Convert object to array and stringify */
     return Object.values(nodes);
+}
+
+export const downloadTfModelJson = async (model: tf.LayersModel) => {
+    try {
+        const saveResult = await model.save('downloads://mymodel');
+        return saveResult;
+    } catch (e) {
+        return false;
+    }
+}
+
+export {
+    tf
 }
