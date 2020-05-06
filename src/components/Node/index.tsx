@@ -31,6 +31,8 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
     }
 
     handleArgChange (type: string, value: any) {
+        console.log(type, "type");
+        
         this.setState({ 
             args: { ...this.state.args, [type]: value }},
             () => this.updateNodeArgs()
@@ -39,6 +41,8 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
 
     updateNodeArgs () {
         this.props.node.args = this.state.args;
+        console.log(this.state.args, "args");
+        
     }
 
     renderArgs (args: any) {

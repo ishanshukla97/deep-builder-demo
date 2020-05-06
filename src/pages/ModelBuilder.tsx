@@ -10,9 +10,10 @@ import { OpsWidget } from "../components/OpsWidget";
 import { NodeModel } from "../components/Node/NodeModel";
 import { CustomLoader as Loader } from "../components/Loader";
 import { PresetWidget } from "../components/PresetsWidget";
+import { PropertyPane } from "../components/PropertyPane";
 
 /* Import services */
-import { generateTFModel, parseGraph, tf, downloadTfModelJson } from "../services/playground"
+import { generateTFModel, parseGraph, tf } from "../services/playground"
 
 /* Import utilities */
 import { DiagramApplication } from "../utils/playground"
@@ -32,15 +33,21 @@ interface IModelBuilderComponentState {
         message: string;
         type: string;
     };
+    selectedNode?: {
+        name: string;
+        type: string;
+        sub_type?: string;
+        value: any;
+    }[];
+    selectedNodeId?: string;
 }
-
+ 
 const toastErrorSettings: ToastOptions = {
     position: "top-right",
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
-    draggable: true
 }
 
 const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
@@ -52,9 +59,9 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         error: {
             message: "",
             type: ""
-        }
+        },
+        selectedNode: undefined
     });
-
     useEffect(() => {
         try {
             if (state.error?.type === "Error") {
@@ -72,6 +79,66 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         setState({ ...state, forceUpdate: !state.forceUpdate });
     }
 
+    /**@todo
+     * node.args accepts args in format: { type: value } where type maybe conv2d, filters, etc..
+     * Property pane accepts arguments as node.getOptions().args, these do not contain values
+     * To pass these args to property pane they must be glued together with their respective values
+     * so as to properly display them.
+     * 
+     * 1) Upon node selection
+     * 2) get all args from node.args (for previously typed values)
+     * 3) loop through node.args and simulataneously put the above previously typed values to same object 
+     * 4) if none values then put empty strings as values in the same object
+     */
+    const handleArgChange = (type: string, value: any) => {
+        console.log(type, value, "type value");
+        
+        
+    }
+
+    /**
+     * This function is registered as a listener to each and every node. It is invoked when 
+     * an event occurs with the respective node. It performs two jobs
+     * 1) finds the previously selected node in the diagram engine
+     *      If the the user has set some layer property by selecting/typing, then,
+     *      updates the respective node's arg property with the new values
+     * 2) Gets the newly selected node and checks if there are any property set by the user.
+     *      If any property is found, then, Glue together argument metadata with the previously
+     *      set properties into one object.
+     *      Sets the state of component with the newly selected args and values.
+     * @param arg this object is auto created by react diagrams and contains 'entity' property which
+     * is the node selected by the user.
+     */
+    const selectionChangeListener = (arg: any) => {
+        const prevId = state.selectedNodeId;
+        if (prevId && prevId !== arg.entity.getOptions().id) {
+            const node = (diagramApp.getActiveDiagram().getNode(prevId) as NodeModel);
+            let newArgs: Record<string, any> = {};
+            state.selectedNode?.forEach(item => {
+                if (item.value) {
+                    newArgs[item.name] = item.value;
+                }
+            });
+            node.args = newArgs;
+            diagramApp.getDiagramEngine().getModel().removeNode(node);
+            diagramApp.getDiagramEngine().getModel().addNode(node);
+            forceRender();
+        }
+
+        const previousArgValues = Object.entries(arg.entity.args);
+        const layerArgsWithValues = arg.entity.getOptions().args.map((arg: any) => {
+            const prevValue = previousArgValues.filter(keyVal => (keyVal[0] === arg.name))[0];
+            
+            if (prevValue) {
+                return { ...arg, value: prevValue[1] };
+            }
+            return { ...arg, value: "" };
+        });
+        
+        setState({ ...state, selectedNode: layerArgsWithValues, selectedNodeId: arg.entity.getOptions().id });
+        return;
+    }    
+
     const addNode = async (name: string, args: any, color: string, event: any) => {
         let node: NodeModel;
         node = new NodeModel({name, args, color});
@@ -80,6 +147,9 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         node.setPosition(point);
         diagramApp.getDiagramEngine().getModel().addNode(node);
 
+        node.registerListener({
+            eventDidFire: selectionChangeListener
+        })
         triggerTFGraphAnalyzer();
         forceRender();
     }
@@ -217,6 +287,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         <PlaygroundWidget
             renderAvailableOps={() => <OpsWidget availableOps={ops} />} 
             renderAvailablePresets={() => <PresetWidget presets={presets} />}
+            renderPropertyPane={() => <PropertyPane onChange={handleArgChange} layerProps={state.selectedNode} />}
             handleAddNode={addNode}
             handleAddPresetModel={addPresetModel}
             renderCanvasWidget={(className?: string) => (<CanvasWidget 

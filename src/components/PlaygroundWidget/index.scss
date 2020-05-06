@@ -4,6 +4,23 @@
     padding: 0.35rem 0;
     background-color: rgb(60, 60, 60);
 
+    &__left-pane {
+        display: flex;
+        flex-direction: column;
+        width: 20%;
+        padding-left: 3px;
+    }
+    &__ops-container {
+        background-color: white;
+        overflow-y: scroll;
+        height: 47%;
+    }
+    &__property-pane-container {
+        background-color: rgb(184, 184, 184);
+        height: 47%;
+        overflow-y: scroll;
+    }
+
     &__container {
         display: flex;
 
@@ -20,6 +37,7 @@
 
     &__content {
         min-height: 100%;
+        height: 46.2rem;
         width: 75%;
         margin: 0 10px;
         border-radius: 0.5rem;
@@ -77,48 +95,5 @@
         color: white;
         padding-left: 10px;
         cursor: pointer;
-    }
-}
-
-.ops-bucket {
-    height: 47rem;
-    width: 20%;
-    background-color: rgb(60, 60, 60);
-    border-radius: 0.5rem;
-    overflow-y: scroll;
-
-    &__item {
-        padding: 0.8rem;
-        color: white;
-        border: 1px solid;
-        border-color: black;
-        border-radius: 0.2rem;
-        background-color: black;
-    }
-    &__label {
-        font-size: 1.5rem;
-    }
-    &--blue {
-        background-color: rgb(100, 123, 255);
-    }
-    &--red {
-        background-color: rgb(255, 95, 95)
-    }
-    &--yellow {
-        background-color: rgb(255, 255, 91);
-        color: black;
-    }
-    &--purple {
-        background-color: rgb(255, 104, 255);
-    }
-    &--cyan {
-        background-color: cyan;
-        color: black;
-    }
-    &--dark-blue {
-        background-color: rgb(0, 0, 168);
-    }
-    &--green {
-        background-color: rgb(42, 143, 42);
     }
 }

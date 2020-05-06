@@ -6,6 +6,7 @@ import { Container, Button, Input, Icon } from "semantic-ui-react";
 export interface PlaygroundWidgetProps {
     renderAvailableOps: () => any;
     renderAvailablePresets: () => any;
+    renderPropertyPane: () => any;
     renderCanvasWidget: (className?: string) => any;
     handleAddNode: (name: string, args: any, color: string, event: any) => any;
     handleAddPresetModel: (data: any) => any;
@@ -37,9 +38,14 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
     return (
         <Container fluid className="playground-widget">
             <div className="playground-widget__container">
-                <div className="ops-bucket">
-                    { props.renderAvailablePresets() }
-                    { props.renderAvailableOps() }
+                <div className="playground-widget__left-pane">
+                    <div className="playground-widget__ops-container">
+                        { props.renderAvailablePresets() }
+                        { props.renderAvailableOps() }
+                    </div>
+                    <div className="playground-widget__property-pane-container">
+                        { props.renderPropertyPane() }
+                    </div>
                 </div>
                 <div
                     onDrop={handleDrop}
