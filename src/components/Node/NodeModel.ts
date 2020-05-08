@@ -51,6 +51,10 @@ export class NodeModel extends BaseNodeModel<NodeModelGenerics> {
         }
     }
 
+    setArgs (args: any) {
+        this.args = args;
+    }
+
     addPort<T extends DefaultPortModel>(port: T): T {
 		super.addPort(port);
 		if (port.getOptions().in) {
