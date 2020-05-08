@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Container } from "semantic-ui-react";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import { DefaultLinkModel } from "@projectstorm/react-diagrams";
@@ -33,13 +33,15 @@ interface IModelBuilderComponentState {
         message: string;
         type: string;
     };
-    selectedNode?: {
+};
+interface ISelectedNodeState {
+    node?: {
         name: string;
         type: string;
         sub_type?: string;
         value: any;
     }[];
-    selectedNodeId?: string;
+    id?: string;
 }
  
 const toastErrorSettings: ToastOptions = {
@@ -60,9 +62,13 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             message: "",
             type: ""
         },
-        selectedNode: undefined,
-        selectedNodeId: undefined
     });
+    const [selectedNode, setSelectedNode] = useState<ISelectedNodeState>({
+        node: undefined,
+        id: undefined
+    });
+    const prevSelectedNode = usePrevious(selectedNode);
+
     useEffect(() => {
         try {
             if (state.error?.type === "Error") {
@@ -73,7 +79,27 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         } catch (e) {
             return;
         }
-    }, [state.error])
+    }, [state.error]);
+    useEffect(() => {
+        if (prevSelectedNode) {
+            const {node, id} = prevSelectedNode;
+            if (id) {
+                const diagNode = (diagramApp.getActiveDiagram().getNode(id) as NodeModel);
+                if (!diagNode)  return;
+                let newArgs: Record<string, any> = {};
+                node?.forEach(item => {
+                    if (item.value) {
+                        newArgs[item.name] = item.value;
+                    }
+                });
+                diagNode.setArgs(newArgs);
+                console.log(diagNode, "diagNode");
+                console.log(newArgs, "newArgs");
+                
+                forceRender();
+            }
+        }
+    }, [selectedNode])
 
     const forceRender = () => {
         diagramApp.getDiagramEngine().repaintCanvas()
@@ -81,14 +107,16 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     }
 
     const handleArgChange = (type: string, value: any) => {
-        if (state.selectedNode) {
-            const newSelectedNode = state.selectedNode.map(arg => {
+        if (selectedNode.node) {
+            const newSelectedNode = selectedNode.node.map(arg => {
                 if (arg.name === type) {
                     return { ...arg, value };
                 }
                 return { ...arg };
-            })
-            setState({ ...state, selectedNode: newSelectedNode });
+            });
+            console.log(newSelectedNode, "argchange");
+            
+            setSelectedNode({ ...selectedNode, node: newSelectedNode });
         }
     }
 
@@ -105,24 +133,8 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
      * @param arg this object is auto created by react diagrams and contains 'entity' property which
      * is the node selected by the user.
      */
-    const selectionChangeListener = (arg: any, state: IModelBuilderComponentState) => {
-        const prevId = state.selectedNodeId;
-        console.log(arg, "prevId in change");
-        
-        if (prevId) {
-            const node = (diagramApp.getActiveDiagram().getNode(prevId) as NodeModel);
-            let newArgs: Record<string, any> = {};
-            state.selectedNode?.forEach(item => {
-                if (item.value) {
-                    newArgs[item.name] = item.value;
-                }
-            });
-            node.args = newArgs;
-            console.log(node, "new node");
-            
-            forceRender();
-        }
-
+    
+    const selectionChangeListener = (arg: any) => {
         const previousArgValues = Object.entries(arg.entity.args);
         const layerArgsWithValues = arg.entity.getOptions().args.map((arg: any) => {
             const prevValue = previousArgValues.filter(keyVal => (keyVal[0] === arg.name))[0];
@@ -133,7 +145,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             return { ...arg, value: "" };
         });
         
-        setState({ ...state, selectedNode: layerArgsWithValues, selectedNodeId: arg.entity.options.id });
+        setSelectedNode({ node: layerArgsWithValues, id: arg.entity.options.id });
         return;
     } 
 
@@ -144,9 +156,13 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         let point = diagramApp.getDiagramEngine().getRelativeMousePoint(event);
         node.setPosition(point);
         diagramApp.getDiagramEngine().getModel().addNode(node);
-
+        
+        /**@todo When a node is added all other nodes should be deselected and those added should 
+         * be preselected. Call setState here so the closure of selectionchangeListener has updated state.
+         */
+        
         node.registerListener({
-            eventDidFire: (e: any) => selectionChangeListener(e, state)
+            eventDidFire: selectionChangeListener
         })
         triggerTFGraphAnalyzer();
         forceRender();
@@ -285,7 +301,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         <PlaygroundWidget
             renderAvailableOps={() => <OpsWidget availableOps={ops} />} 
             renderAvailablePresets={() => <PresetWidget presets={presets} />}
-            renderPropertyPane={() => <PropertyPane onChange={handleArgChange} layerProps={state.selectedNode} />}
+            renderPropertyPane={() => <PropertyPane onChange={handleArgChange} layerProps={selectedNode.node} />}
             handleAddNode={addNode}
             handleAddPresetModel={addPresetModel}
             renderCanvasWidget={(className?: string) => (<CanvasWidget 
@@ -300,3 +316,11 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
 }
 
 export default ModelBuilder;
+
+const usePrevious = <T extends {}>(value: T): T | undefined => {
+    const ref = useRef<T>();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
+}
