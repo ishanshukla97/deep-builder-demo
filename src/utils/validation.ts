@@ -18,3 +18,16 @@ export const parseStringToArray = (str: string) => {
     });
     return arrNum;
 }
+export const parseArrayToString = (arr: number[]) => {
+    let strValue = ""
+    if (arr) {
+        if (isNaN(arr[arr.length - 1]) && arr.length !== 0) {
+            arr.pop();
+            strValue = arr.toString() + ",";
+            
+        } else {
+            strValue = arr.toString();
+        }
+    }
+    return strValue;
+}

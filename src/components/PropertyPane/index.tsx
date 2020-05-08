@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, Checkbox, Dropdown } from "semantic-ui-react";
 
-import { parseStringToArray } from "../../utils/validation";
+import { parseStringToArray, parseArrayToString } from "../../utils/validation";
 
 interface PropertyPaneProps {
     opName?: string
@@ -48,11 +48,13 @@ export const PropertyPane: React.FC<PropertyPaneProps> = (props) => {
                     if (item.sub_type) {
                         return <InputFactory
                             {...inputProps}
+                            value={parseArrayToString(item.value)}
                             onChange={(e: any) => handleArrayInputChange(e, item.name)}
                         />
                     }
                     return <InputFactory
                         {...inputProps}
+                        type="number"
                         onChange={(e: any) => handleNumberInputChange(e, item.name)}
                     />
                 case "string":

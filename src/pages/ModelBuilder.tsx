@@ -60,7 +60,8 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             message: "",
             type: ""
         },
-        selectedNode: undefined
+        selectedNode: undefined,
+        selectedNodeId: undefined
     });
     useEffect(() => {
         try {
@@ -79,21 +80,16 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         setState({ ...state, forceUpdate: !state.forceUpdate });
     }
 
-    /**@todo
-     * node.args accepts args in format: { type: value } where type maybe conv2d, filters, etc..
-     * Property pane accepts arguments as node.getOptions().args, these do not contain values
-     * To pass these args to property pane they must be glued together with their respective values
-     * so as to properly display them.
-     * 
-     * 1) Upon node selection
-     * 2) get all args from node.args (for previously typed values)
-     * 3) loop through node.args and simulataneously put the above previously typed values to same object 
-     * 4) if none values then put empty strings as values in the same object
-     */
     const handleArgChange = (type: string, value: any) => {
-        console.log(type, value, "type value");
-        
-        
+        if (state.selectedNode) {
+            const newSelectedNode = state.selectedNode.map(arg => {
+                if (arg.name === type) {
+                    return { ...arg, value };
+                }
+                return { ...arg };
+            })
+            setState({ ...state, selectedNode: newSelectedNode });
+        }
     }
 
     /**
@@ -109,9 +105,11 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
      * @param arg this object is auto created by react diagrams and contains 'entity' property which
      * is the node selected by the user.
      */
-    const selectionChangeListener = (arg: any) => {
+    const selectionChangeListener = (arg: any, state: IModelBuilderComponentState) => {
         const prevId = state.selectedNodeId;
-        if (prevId && prevId !== arg.entity.getOptions().id) {
+        console.log(arg, "prevId in change");
+        
+        if (prevId) {
             const node = (diagramApp.getActiveDiagram().getNode(prevId) as NodeModel);
             let newArgs: Record<string, any> = {};
             state.selectedNode?.forEach(item => {
@@ -120,8 +118,8 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 }
             });
             node.args = newArgs;
-            diagramApp.getDiagramEngine().getModel().removeNode(node);
-            diagramApp.getDiagramEngine().getModel().addNode(node);
+            console.log(node, "new node");
+            
             forceRender();
         }
 
@@ -135,9 +133,9 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             return { ...arg, value: "" };
         });
         
-        setState({ ...state, selectedNode: layerArgsWithValues, selectedNodeId: arg.entity.getOptions().id });
+        setState({ ...state, selectedNode: layerArgsWithValues, selectedNodeId: arg.entity.options.id });
         return;
-    }    
+    } 
 
     const addNode = async (name: string, args: any, color: string, event: any) => {
         let node: NodeModel;
@@ -148,7 +146,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         diagramApp.getDiagramEngine().getModel().addNode(node);
 
         node.registerListener({
-            eventDidFire: selectionChangeListener
+            eventDidFire: (e: any) => selectionChangeListener(e, state)
         })
         triggerTFGraphAnalyzer();
         forceRender();
