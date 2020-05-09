@@ -2,6 +2,7 @@ import * as SRD from "@projectstorm/react-diagrams";
 import { DeleteItemsAction } from "@projectstorm/react-canvas-core";
 
 import { NodeFactory } from "../components/Node/NodeFactory"
+import { NodeModel } from "../components/Node/NodeModel";
 
 export class DiagramApplication {
     protected activeModel: SRD.DiagramModel
@@ -34,4 +35,11 @@ export class DiagramApplication {
     public getDiagramEngine(): SRD.DiagramEngine {
         return this.diagramEngine;
     }
+}
+
+export const attachListenerToNode = (node: NodeModel, listener: (args: any) => any) => {
+    node.registerListener({
+        eventDidFire: listener
+    });
+    return node;
 }

@@ -16,7 +16,7 @@ import { PropertyPane } from "../components/PropertyPane";
 import { generateTFModel, parseGraph, tf } from "../services/playground"
 
 /* Import utilities */
-import { DiagramApplication } from "../utils/playground"
+import { DiagramApplication, attachListenerToNode } from "../utils/playground"
 
 /* Import static content */
 import ops from "../static/ops";
@@ -88,7 +88,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 if (!diagNode)  return;
                 let newArgs: Record<string, any> = {};
                 node?.forEach(item => {
-                    if (item.value) {
+                    if (item.value !== "") {
                         newArgs[item.name] = item.value;
                     }
                 });
@@ -99,7 +99,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 forceRender();
             }
         }
-    }, [selectedNode])
+    }, [selectedNode.id])
 
     const forceRender = () => {
         diagramApp.getDiagramEngine().repaintCanvas()
@@ -165,9 +165,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
          * be preselected. Call setState here so the closure of selectionchangeListener has updated state.
          */
         
-        node.registerListener({
-            eventDidFire: selectionChangeListener
-        })
+        attachListenerToNode(node, selectionChangeListener);
         triggerTFGraphAnalyzer();
         forceRender();
     }
@@ -267,7 +265,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             node.setPosition(x, y);
             node.setSelected(true);
             diagramApp.getDiagramEngine().getModel().addNode(node);
-
+            attachListenerToNode(node, selectionChangeListener);
             presetToCurrentId[id] = node;
         });
 

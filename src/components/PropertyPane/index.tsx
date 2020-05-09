@@ -34,13 +34,11 @@ export const PropertyPane: React.FC<PropertyPaneProps> = (props) => {
         const value = e.target.value;
         props.onChange(label, value)
     }
-    const handleBooleanChange = (e: any, label: string) => {
-        const value = e.target.value;
-        console.log(value, "val");
-        
+    const handleBooleanChange = (isChecked: any, label: string) => {
+        props.onChange(label, !isChecked);
     }
-    const handleMultiSelectChange = (e: any) => {
-
+    const handleMultiSelectChange = (value: any, label: string) => {
+        props.onChange(label, value)        
     }
     
     const renderLayerProps = (lp: any) => {
@@ -67,10 +65,18 @@ export const PropertyPane: React.FC<PropertyPaneProps> = (props) => {
                         onChange={handleTextInputChange}
                     />
                 case "boolean":
+                    if (item.value === "") {
+                        return <ToggleFactory
+                            {...inputProps}
+                            value={true}
+                            type="boolean"
+                            onChange={() => handleBooleanChange(true, item.name)}
+                        />
+                    }
                     return <ToggleFactory
                         {...inputProps}
                         type="boolean"
-                        onChange={handleBooleanChange}
+                        onChange={() => handleBooleanChange(item.value, item.name)}
                     />
                 case "multiSelect":
                     const optList =  item.options.split('|');
@@ -78,7 +84,7 @@ export const PropertyPane: React.FC<PropertyPaneProps> = (props) => {
                     return <MultiSelectFactory
                         {...inputProps}
                         options={options}
-                        onChange={handleMultiSelectChange}
+                        onChange={(e: any, { value }: any) => handleMultiSelectChange(value, item.name)}
                     />
                 default:
                     return;
@@ -127,23 +133,12 @@ export interface ToggleFactoryProps extends BaseFactoryProps {
     type: string
 }
 export const ToggleFactory: React.FC<ToggleFactoryProps> = props => {
-    if (props.value === undefined) {
-        return <Checkbox 
-            className="node__input-field"
-            type="checkbox"
-            label={props.label} 
-            onChange={props.onChange}
-            defaultChecked
-            color="white" 
-        />
-    }
-    
     return <Checkbox 
         className="node__input-field"
         type="checkbox"
         label={props.label} 
         onChange={props.onChange}
-        defaultChecked={props.value}
+        checked={props.value}
         color="white" 
     />
 }

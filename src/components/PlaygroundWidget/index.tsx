@@ -44,8 +44,8 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
                         { props.renderAvailablePresets() }
                         { props.renderAvailableOps() }
                     </div>
+                    <span className="playground-widget--property-pane-title">LAYER PROPERTY</span>
                     <div className="playground-widget__property-pane-container">
-                        <span className="playground-widget--property-pane-title">LAYER PROPERTY</span>
                         { props.renderPropertyPane() }
                     </div>
                 </div>
