@@ -114,7 +114,6 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 }
                 return { ...arg };
             });
-            console.log(newSelectedNode, "argchange");
             
             setSelectedNode({ ...selectedNode, node: newSelectedNode });
         }
@@ -135,18 +134,23 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
      */
     
     const selectionChangeListener = (arg: any) => {
-        const previousArgValues = Object.entries(arg.entity.args);
-        const layerArgsWithValues = arg.entity.getOptions().args.map((arg: any) => {
-            const prevValue = previousArgValues.filter(keyVal => (keyVal[0] === arg.name))[0];
-            
-            if (prevValue) {
-                return { ...arg, value: prevValue[1] };
+        if (arg.function === "selectionChanged") {
+            if (!arg.isSelected) {
+                setSelectedNode({ node: undefined, id: undefined });
+                return;
             }
-            return { ...arg, value: "" };
-        });
-        
-        setSelectedNode({ node: layerArgsWithValues, id: arg.entity.options.id });
-        return;
+            const previousArgValues = Object.entries(arg.entity.args);
+            const layerArgsWithValues = arg.entity.getOptions().args.map((arg: any) => {
+                const prevValue = previousArgValues.filter(keyVal => (keyVal[0] === arg.name))[0];
+                
+                if (prevValue) {
+                    return { ...arg, value: prevValue[1] };
+                }
+                return { ...arg, value: "" };
+            });
+            setSelectedNode({ node: layerArgsWithValues, id: arg.entity.options.id });
+            return;
+        }
     } 
 
     const addNode = async (name: string, args: any, color: string, event: any) => {

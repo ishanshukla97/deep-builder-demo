@@ -3,6 +3,8 @@ import { Input, Checkbox, Dropdown } from "semantic-ui-react";
 
 import { parseStringToArray, parseArrayToString } from "../../utils/validation";
 
+import "./index.scss"
+
 interface PropertyPaneProps {
     opName?: string
     layerProps?: {
@@ -32,8 +34,10 @@ export const PropertyPane: React.FC<PropertyPaneProps> = (props) => {
         const value = e.target.value;
         props.onChange(label, value)
     }
-    const handleBooleanChange = (e: any) => {
-
+    const handleBooleanChange = (e: any, label: string) => {
+        const value = e.target.value;
+        console.log(value, "val");
+        
     }
     const handleMultiSelectChange = (e: any) => {
 
@@ -65,21 +69,24 @@ export const PropertyPane: React.FC<PropertyPaneProps> = (props) => {
                 case "boolean":
                     return <ToggleFactory
                         {...inputProps}
+                        type="boolean"
                         onChange={handleBooleanChange}
                     />
-                // case "multiSelect":
-                //     return <MultiSelectFactory
-                //         {...inputProps}
-                //         onChange={handleMultiSelectChange}
-                //     />
-                // default:
-                //     return;
+                case "multiSelect":
+                    const optList =  item.options.split('|');
+                    const options = optList.map((opt: string) => ({ key: opt, value: opt, text: opt }));
+                    return <MultiSelectFactory
+                        {...inputProps}
+                        options={options}
+                        onChange={handleMultiSelectChange}
+                    />
+                default:
+                    return;
             }
         });
     }
 
     return <div className="property-pane">
-        <div className="property-pane__header">Layer Property</div>
         {
             props.layerProps && (
                 <div className="property-pane__layer-properties">

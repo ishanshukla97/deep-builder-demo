@@ -39,11 +39,13 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
         <Container fluid className="playground-widget">
             <div className="playground-widget__container">
                 <div className="playground-widget__left-pane">
+                    <span className="playground-widget--ops-title">COMPONENTS</span>
                     <div className="playground-widget__ops-container">
                         { props.renderAvailablePresets() }
                         { props.renderAvailableOps() }
                     </div>
                     <div className="playground-widget__property-pane-container">
+                        <span className="playground-widget--property-pane-title">LAYER PROPERTY</span>
                         { props.renderPropertyPane() }
                     </div>
                 </div>
