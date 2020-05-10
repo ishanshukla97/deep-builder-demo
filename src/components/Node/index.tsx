@@ -115,11 +115,11 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
                     
                     <PortWidget engine={this.props.engine} 
                     port={this.props.node.getInPorts()[0]}>
-                        <div className="node__port" />
+                        <div className="node__port node__port--in" />
                     </PortWidget>
                     <PortWidget engine={this.props.engine}
                     port={this.props.node.getOutPorts()[0]}>
-                        <div className="node__port" />
+                        <div className="node__port node__port--out" />
                     </PortWidget>
                 </div>
             </div>
