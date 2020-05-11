@@ -93,9 +93,6 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                     }
                 });
                 diagNode.setArgs(newArgs);
-                console.log(diagNode, "diagNode");
-                console.log(newArgs, "newArgs");
-                
                 forceRender();
             }
         }

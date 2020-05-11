@@ -31,8 +31,6 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
     }
 
     handleArgChange (type: string, value: any) {
-        console.log(type, "type");
-        
         this.setState({ 
             args: { ...this.state.args, [type]: value }},
             () => this.updateNodeArgs()
@@ -41,8 +39,6 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
 
     updateNodeArgs () {
         this.props.node.args = this.state.args;
-        console.log(this.state.args, "args");
-        
     }
 
     renderArgs (args: any) {
@@ -101,15 +97,15 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
                     <p>{ this.props.node.getOptions().name }</p>
                 </div>
                 <Accordion>
-                    <Accordion.Title active={this.state.showArgs} onClick={this.toggleArgs} index={0}>
+                    <Accordion.Title>
                         <Icon name='add' className="node--white-imp" />
                         <p className="m-0 node--white-imp">Args</p>
                     </Accordion.Title>
-                    <Accordion.Content active={this.state.showArgs} className="node__content node--white-imp">
+                    {/* <Accordion.Content active={this.state.showArgs} className="node__content node--white-imp">
                         {
                             this.renderArgs(this.props.node.getOptions().args)
                         }
-                    </Accordion.Content>
+                    </Accordion.Content> */}
                 </Accordion>
                 <div className="node__port--container">
                     
