@@ -1,6 +1,7 @@
 import React from "react";
 
 import { OpsWidgetItem } from "./Item";
+import { OperationTypeToColorMapping } from "../../utils/constants"
 import "./index.scss";
 
 interface IArgs {
@@ -30,14 +31,4 @@ export const OpsWidget: React.FC<IOpsWidgetProps> = props => {
             />))
         }
     </div>
-}
-
-const OperationTypeToColorMapping: Record<string, string> = {
-    "Basic": "dark-blue",
-    "Activation": "red",
-    "Convolution": "purple",
-    "Merge": "yellow",
-    "Pooling": "cyan",
-    "Normalization": "green",
-    "Input": "blue"
 }

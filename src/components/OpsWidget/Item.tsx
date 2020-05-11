@@ -25,6 +25,7 @@ export const OpsWidgetItem: React.FC<OpsWidgetItemProps> = props => {
             draggable={true}
             onDragStart={handleDragStart}
             className={"ops-bucket__item "}
+            data-testid='ops-bucket-item'
         >
             <div className="ops-bucket__label">
                 {props.name}
