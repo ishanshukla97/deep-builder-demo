@@ -4,7 +4,7 @@ import { render, cleanup, fireEvent, createEvent, act } from "@testing-library/r
 import { OpsWidget } from "../OpsWidget";
 import { OperationTypeToColorMapping } from "../../utils/constants"
 
-beforeEach(() => cleanup);
+beforeEach(() => cleanup());
 
 const fakeOpItems = [
     {

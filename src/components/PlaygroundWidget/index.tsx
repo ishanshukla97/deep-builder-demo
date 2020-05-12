@@ -21,8 +21,9 @@ export interface PlaygroundWidgetState {
 export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
     const [state, setState] = React.useState<PlaygroundWidgetState>({ name: "" })
     const handleDrop = (event: any) => {
-        if (event.dataTransfer.getData('ops-node')) {
-            const data = JSON.parse(event.dataTransfer.getData('ops-node'));
+        const opsNodeData = event.dataTransfer.getData('ops-node')
+        if (opsNodeData) {
+            const data = JSON.parse(opsNodeData);
             props.handleAddNode(data.name, data.args, data.color, event);
             return;
         }
@@ -54,6 +55,7 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
                     onDragOver={event => {
                         event.preventDefault();
                     }}
+                    data-testid='playground-widget-main'
                     className="playground-widget__content"
                 >
                     { props.renderLoader() }
