@@ -109,3 +109,31 @@ test('renders playground area where presets can be dropped', () => {
     expect(handleAddPresetModel).toHaveBeenCalledTimes(1);
     expect(handleAddNode).not.toHaveBeenCalled();
 });
+
+test('triggers download when clicked on download button', () => {
+    const renderAvailableOps = jest.fn();
+    const renderAvailablePresets = jest.fn();
+    const renderPropertyPane = jest.fn();
+    const renderCanvasWidget = jest.fn();
+    const handleAddNode = jest.fn();
+    const handleAddPresetModel = jest.fn();
+    const renderLoader = jest.fn();
+    const addPreset = jest.fn();
+    const onDownload = jest.fn();
+    const { getByText, getByTestId } = render(<PlaygroundWidget 
+        renderAvailableOps={renderAvailableOps}
+        renderAvailablePresets={renderAvailablePresets}
+        renderCanvasWidget={renderCanvasWidget}
+        renderPropertyPane={renderPropertyPane}
+        handleAddNode={handleAddNode}
+        handleAddPresetModel={handleAddPresetModel}
+        renderLoader={renderLoader}
+        addPreset={addPreset}
+        onDownload={onDownload}
+    />);
+    const downloadBtnNode = getByTestId('btn-download');
+
+    fireEvent.click(downloadBtnNode);
+
+    expect(onDownload).toHaveBeenCalled();
+})

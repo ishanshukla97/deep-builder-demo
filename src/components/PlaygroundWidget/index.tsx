@@ -61,7 +61,8 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
                     { props.renderLoader() }
                     { props.renderCanvasWidget("playground-widget--canvas-wrapper") }
                 </div>
-                <button 
+                <button
+                    data-testid='btn-download'
                     onClick={props.onDownload} 
                     className='playground-widget--btn-download'>
                     <Icon name='download'/></button>   

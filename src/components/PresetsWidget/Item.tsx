@@ -20,6 +20,7 @@ export const Item: React.FC<IItem> = props => {
             draggable={true}
             onDragStart={handleDragStart}
             className="ops-bucket__item"
+            data-testid='preset-item'
         >
             { props.name }
         </div>
