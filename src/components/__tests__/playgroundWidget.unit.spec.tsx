@@ -2,6 +2,7 @@ import React from "react";
 import { render, cleanup, fireEvent, createEvent } from "@testing-library/react";
 
 import { PlaygroundWidget } from '../PlaygroundWidget';
+import { setDataTransferProp } from '../../utils/test-utils';
 
 beforeEach(() => cleanup());
 
@@ -95,17 +96,17 @@ test('renders playground area where presets can be dropped', () => {
         onDownload={onDownload}
     />);
     const mockDropData = {data: JSON.stringify({ data: 'model' })}
-    const mockGetDataFn = jest.fn();
-    mockGetDataFn
+    const getData = jest.fn();
+    getData
     .mockReturnValueOnce(undefined)
     .mockReturnValueOnce(JSON.stringify(mockDropData));
 
     const droppableNode = getByTestId('playground-widget-main');
-    const dropEvent = createEvent.drop(droppableNode);
-    Object.assign(dropEvent, { dataTransfer: {getData: mockGetDataFn} });
+    let dropEvent = createEvent.drop(droppableNode);
+    dropEvent = setDataTransferProp({ getData }, dropEvent)
     
     fireEvent(droppableNode, dropEvent);
-    expect(mockGetDataFn).toHaveBeenCalledWith('model-node');
+    expect(getData).toHaveBeenCalledWith('model-node');
     expect(handleAddPresetModel).toHaveBeenCalledTimes(1);
     expect(handleAddNode).not.toHaveBeenCalled();
 });

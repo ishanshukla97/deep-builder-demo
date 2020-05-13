@@ -3,6 +3,8 @@ import { render, cleanup, fireEvent, createEvent, act } from "@testing-library/r
 
 import ModelBuilder from "../ModelBuilder";
 
+beforeEach(() => cleanup());
+
 test('renders without crashing', () => {
-    const {getByText} = render(<ModelBuilder />);
+    render(<ModelBuilder />);
 });
