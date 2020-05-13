@@ -2,6 +2,7 @@ import React from "react";
 import { render, cleanup, fireEvent, createEvent, act } from "@testing-library/react";
 
 import { PresetWidget } from "../PresetsWidget";
+import { setDataTransferProp } from "../../utils/test-utils";
 
 beforeEach(() => cleanup());
 
@@ -28,11 +29,7 @@ test('renders list of model presets', () => {
 
 test('on drag start sets dataTransfer property correctly', () => {
     const setData = jest.fn()
-    const ev = {
-        dataTransfer: {
-            setData
-        }
-    }
+    
     const mockDataStr = JSON.stringify({
         model: fakePresetItems[0].model,
         name: fakePresetItems[0].name,
@@ -43,9 +40,8 @@ test('on drag start sets dataTransfer property correctly', () => {
     } = render(<PresetWidget presets={fakePresetItems} />);
 
     const draggableOpNode = getByTestId('preset-item');
-    const mockDropEvent = createEvent.dragStart(draggableOpNode);
-    
-    Object.assign(mockDropEvent, ev);
+    let mockDropEvent = createEvent.dragStart(draggableOpNode);
+    mockDropEvent = setDataTransferProp({ setData }, mockDropEvent);
     fireEvent(draggableOpNode, mockDropEvent)
 
     expect(setData).toHaveBeenCalledTimes(1)

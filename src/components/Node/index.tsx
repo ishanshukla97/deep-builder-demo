@@ -92,7 +92,7 @@ export class NodeWidget extends React.Component<NodeWidgetProps, NodeWidgetState
 
     render() {
         return (
-            <div className={this.props.node.isSelected()? "node--selected": ""}>
+            <div className={this.props.node.isSelected()? "node--selected": ""} data-testid='op-node'>
                 <div className={"node__title " + "node__title--" + this.props.node.color}>
                     <p>{ this.props.node.getOptions().name }</p>
                 </div>

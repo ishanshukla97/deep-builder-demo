@@ -2,6 +2,7 @@ import React from "react";
 import { render, cleanup, fireEvent, createEvent, act } from "@testing-library/react";
 
 import { OpsWidget } from "../OpsWidget";
+import { setDataTransferProp } from "../../utils/test-utils";
 import { OperationTypeToColorMapping } from "../../utils/constants"
 
 beforeEach(() => cleanup());
@@ -33,11 +34,7 @@ test('renders list of tensorflow operation items', () => {
 
 test('on drag start sets dataTransfer property correctly', () => {
     const setData = jest.fn()
-    const ev = {
-        dataTransfer: {
-            setData
-        }
-    }
+    
     const mockDataStr = JSON.stringify({
         model: "custom",
         name: fakeOpItems[0].func_name,
@@ -49,9 +46,9 @@ test('on drag start sets dataTransfer property correctly', () => {
     } = render(<OpsWidget availableOps={fakeOpItems} />);
 
     const draggableOpNode = getByTestId('ops-bucket-item');
-    const mockDropEvent = createEvent.dragStart(draggableOpNode);
+    let mockDropEvent = createEvent.dragStart(draggableOpNode);
+    mockDropEvent = setDataTransferProp({ setData }, mockDropEvent);
     
-    Object.assign(mockDropEvent, ev);
     fireEvent(draggableOpNode, mockDropEvent)
 
     expect(setData).toHaveBeenCalledTimes(1)
