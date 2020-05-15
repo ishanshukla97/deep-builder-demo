@@ -35,12 +35,20 @@ describe('model builder page', () => {
         cy.findByText('strides');
         cy.findByText('name');
     });
+})
 
-    it('can connect two op nodes', () => {
+describe('can connect two op nodes', () => {
+    it('can add 2 op node', () => {
+        cy.viewport(1024, 720).visit('/')
         cy.findByText('input').drag('[data-testid=playground-widget-main]', {position: 'left'})
         cy.findByText('conv2d').drag('[data-testid=playground-widget-main]')
-        
+    })
+    it('can link them together', () => {
         cy.get('[data-name=out]').eq(0).drag('[data-name=in]', {nth: 1});
-
     })
 })
+
+//@todo
+describe('can download a simple model')
+describe('displays error incorrect model is downloaded')
+describe('populates link labels with shapes')
