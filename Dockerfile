@@ -1,25 +1,11 @@
 FROM node:alpine as client
 
-WORKDIR /client
+WORKDIR /app
 
-COPY package.json yarn.lock README.md ./
+COPY . .
 
-RUN apk --no-cache add --virtual native-deps \
-  g++ gcc libgcc libstdc++ linux-headers make python && \
-  npm install node-gyp -g &&\
-  yarn && \
-  apk del native-deps
-
-COPY ./public ./public
-
-COPY ./src ./src
-
-RUN yarn build
+RUN yarn install --frozen-lockfile && yarn build
 
 FROM nginx:latest
 
-LABEL maintainer=Ishan-Shukla
-
-COPY --from=client /client/build/ /usr/share/nginx/html
-
-EXPOSE 80
+COPY --from=client /app/build/ /usr/share/nginx/html
