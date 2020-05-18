@@ -1,8 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@600&display=swap");
+
 .playground-widget {
     min-height: 100%;
     width: 100%;
     padding: 0.35rem 0;
     background-color: #0c0c0c;
+    font-family: 'Raleway';
 
     &__left-pane {
         display: flex;
@@ -102,6 +105,11 @@
         rgba(255, 255, 255, 0.05) 76%, 
         transparent 77%, transparent);
     }
+    &__sidebar {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
     &--btn-download {
         height: 3.5rem;
         width: 3rem;
@@ -111,5 +119,19 @@
         color: white;
         padding-left: 10px;
         cursor: pointer;
+    }
+    &--btn-faq {
+        height: 3rem;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        color: white;
+        letter-spacing: 3px;
+        margin-bottom: 4rem;
+        font-size: 14px;
+        transition: 0.4s all;
+        &:hover {
+            color: gray;
+        }
     }
 }

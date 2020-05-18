@@ -13,6 +13,7 @@ export interface PlaygroundWidgetProps {
     renderLoader: () => any;
     addPreset: (name: string) => any;
     onDownload: () => any;
+    onClickFaq: () => any;
 }
 export interface PlaygroundWidgetState {
     name: string;
@@ -61,11 +62,19 @@ export const PlaygroundWidget: React.FC<PlaygroundWidgetProps> = props => {
                     { props.renderLoader() }
                     { props.renderCanvasWidget("playground-widget--canvas-wrapper") }
                 </div>
-                <button
-                    data-testid='btn-download'
-                    onClick={props.onDownload} 
-                    className='playground-widget--btn-download'>
-                    <Icon name='download'/></button>   
+                <div className='playground-widget__sidebar'>
+                    <button
+                        data-testid='btn-download'
+                        onClick={props.onDownload} 
+                        className='playground-widget--btn-download'>
+                        <Icon name='download'/>
+                    </button>
+                    <button 
+                        className='playground-widget--btn-faq'
+                        onClick={() => props.onClickFaq()}>
+                        FAQ
+                    </button>
+                </div>
             </div> 
         </Container>
     )

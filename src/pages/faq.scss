@@ -1,0 +1,30 @@
+.faq {
+    background-color: #0c0c0c;
+    height: 100vh;
+    padding: 5rem;
+    overflow-x: scroll !important;
+
+    &__content {
+        background-color: #262626;
+        border-radius: 3rem;
+        padding-bottom: 10px;
+    }
+    &--title {
+        color: white;
+        font-size: 3rem;
+        padding-left: 3rem;
+    }
+    &--question-answer-box {
+        margin: 3rem 0;
+        padding: 0 3rem;
+    }
+    &--question {
+        color: white;
+        font-size: 2rem;
+    }
+    &--answer {
+        color: rgb(197, 197, 197);
+        font-size: 20px;
+        padding-left: 10px;
+    }
+}
