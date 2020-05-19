@@ -21,6 +21,7 @@ import { DiagramApplication, attachListenerToNode } from "../utils/playground"
 /* Import static content */
 import ops from "../static/ops";
 import presets from "../static/presets.json";
+import { useHistory } from "react-router-dom";
 
 interface IModelBuilderComponentProps {
     
@@ -54,6 +55,7 @@ const toastErrorSettings: ToastOptions = {
 
 const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
     const diagramApp: DiagramApplication = DiagramApplication.getInstance();
+    const history = useHistory();
 
     const [state, setState] = useState<IModelBuilderComponentState>({ 
         forceUpdate: false, 
@@ -310,6 +312,7 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
             renderLoader={() => <Loader isActive={state.isLoading} size="tiny" label="Analyzing" />}
             addPreset={addPreset}
             onDownload={handleDownload}
+            onClickFaq={() => history.push('/faq')}
         />
     </Container>
 }
