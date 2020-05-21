@@ -7,5 +7,8 @@
 ### This app has few bugs, but, if everything done correctly then it is pretty easy to use. If you are developer then headover to integration tests to see the 'happy path'. 
 ### Feel free to contribute/suggest features/improvements in github issues.
 
+# Demo
+http://34.105.203.41/
+
 # Acknowledgement
 ### This app relies on open source library https://github.com/projectstorm/react-diagrams and would like to thank Dylan for creating such a wonderful library.
