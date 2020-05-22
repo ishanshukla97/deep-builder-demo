@@ -1,7 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom"
 import ModelBuilder from "./ModelBuilder"
-import { FAQPage } from "./FAQ";
+import { FAQPage } from "./FAQ/FAQ";
 
 interface IPageProps {
 

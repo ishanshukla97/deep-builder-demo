@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container } from "semantic-ui-react";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
-import { DefaultLinkModel } from "@projectstorm/react-diagrams";
+import { DefaultLinkModel, NodeModelListener } from "@projectstorm/react-diagrams";
 import { toast, ToastOptions } from "react-toastify";
 
 /* Import components */
@@ -98,7 +98,20 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
                 forceRender();
             }
         }
-    }, [selectedNode.id])
+    }, [selectedNode.id]);
+    
+    useEffect(() => {
+        const nodes = (diagramApp.getActiveDiagram().getNodes() as unknown as NodeModel[]);
+        nodes.forEach((node: NodeModel) => {
+            attachListenerToNode(node, selectionChangeListener);
+        })
+        return () => {
+            const nodes = diagramApp.getActiveDiagram().getNodes();
+            nodes.forEach(node => {
+                node.clearListeners();
+            })
+        }
+    }, [history.location]);
 
     const forceRender = () => {
         diagramApp.getDiagramEngine().repaintCanvas()
@@ -159,7 +172,6 @@ const ModelBuilder: React.FC<IModelBuilderComponentProps> = (props) => {
         let point = diagramApp.getDiagramEngine().getRelativeMousePoint(event);
         node.setPosition(point);
         diagramApp.getDiagramEngine().getModel().addNode(node);
-        
         /**@todo When a node is added all other nodes should be deselected and those added should 
          * be preselected. Call setState here so the closure of selectionchangeListener has updated state.
          */

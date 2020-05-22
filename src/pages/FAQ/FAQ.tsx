@@ -46,8 +46,8 @@ export const FAQPage: React.FC<FAQPageProps> = () => {
             </h1>
             <div className='faq__main'>
                 {
-                    qa.map(({q, a}) => {
-                        return <div className='faq--question-answer-box'>
+                    qa.map(({q, a}, idx) => {
+                        return <div key={idx} className='faq--question-answer-box'>
                             <h3 className='faq--question'>{q}</h3>
                             <p className='faq--answer'>{a}</p>
                         </div>

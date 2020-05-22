@@ -38,8 +38,7 @@ export class DiagramApplication {
 }
 
 export const attachListenerToNode = (node: NodeModel, listener: (args: any) => any) => {
-    node.registerListener({
+    return node.registerListener({
         eventDidFire: listener
     });
-    return node;
 }
