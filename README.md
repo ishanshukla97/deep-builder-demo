@@ -4,7 +4,7 @@
 
 ### This app uses React, React hooks for state management and Jest and Cypress for testing.
 
-### This app has few bugs, but, if everything done correctly then it is pretty easy to use. If you are developer then headover to integration tests to see the 'happy path'. 
+### This app has few bugs, but, if everything done correctly then it is pretty easy to use. If you are a developer then headover to integration tests to see the 'happy path'. 
 ### Feel free to contribute/suggest features/improvements in github issues.
 
 # Demo
