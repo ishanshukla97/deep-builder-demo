@@ -4,6 +4,13 @@
 The following is a set of guidelines for contributing to deep-builder-demo and its packages. 
 These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
+1. All PRs must address some issue. If you think you can improve something in this project, make an issue first.
+2. After making the necessary changes, run yarn test and make sure all tests pass. If something fails, make those tests pass.
+3. PRs with failing tests would be marked as invalid/spam
+4. In draft of PR description mention issue like: Closes #
+
+<h2>Steps for contributing<h2>
+  
 Fork and star this repo ⭐
 
 * Clone it to your local system
@@ -33,6 +40,7 @@ git push branch_name
 <h2>Here are some 12 Rules<h2>
 
 You should be following while doing Open-Source to make your Contributions shine during the whole process:
+
 Be Nice, Be Respectful (BNBR)
 Check if the Issue you created, exists or not.
 Make proper commit messages and document your PR well.
