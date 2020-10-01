@@ -7,6 +7,27 @@
 ### This app has few bugs, but, if everything done correctly then it is pretty easy to use. If you are a developer then headover to integration tests to see the 'happy path'. 
 ### Feel free to contribute/suggest features/improvements in github issues.
 
+
+## Instructions to run
+* If you have node and npm installed 
+
+
+  * Clone this repo
+  * yarn
+  * yarn run
+  
+  
+## For testing:
+  * yarn test
+  
+ * If you have docker installed:
+     *  Clone this repo
+     *  docker build . -t <your image/tag name>
+     *  docker run --rm -it -p 80:80/tcp
+
+
+
+
 # Demo
 http://34.105.203.41/
 
