@@ -12,13 +12,13 @@ A no code tool for building neural networks in the web. With this tool, you can 
 ## Usage
 
 ### If You have Node and npm installed
- 1. Clone this repo
+ 1. Clone this repot
 2. ```yarn```
 3. ```yarn run```
  **For testing: ```yarn test```**
 
 ### If You have docker installed
- 1. Clone this repo
+ 1. Clone this report
 2. ```docker build . -t <your image/tag name>```
 3. ```docker run --rm -it -p 80:80/tcp```
 
