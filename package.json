@@ -19,7 +19,7 @@
     "@types/toposort": "^2.0.3",
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mathjs": "^6.6.1",
     "node-sass": "^4.13.1",
     "pathfinding": "^0.4.18",
