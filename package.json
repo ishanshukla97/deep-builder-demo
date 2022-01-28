@@ -21,7 +21,7 @@
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
     "lodash": "^4.17.19",
-    "mathjs": "^6.6.1",
+    "mathjs": "^7.5.1",
     "node-sass": "^4.13.1",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.10",
