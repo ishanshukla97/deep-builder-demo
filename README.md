@@ -24,4 +24,4 @@ A no code tool for building neural networks in the web. With this tool, you can 
 
 
 ## Demo
-http://34.105.203.41/
+https://brave-spence-24f57f.netlify.app/
